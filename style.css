@@ -1,0 +1,34 @@
+#title {
+    font-size: 25px;
+    font-weight: bold;
+    text-decoration: underline;
+    text-align: center;
+    text-transform: capitalize;
+}
+#plot-area {
+    position: absolute;
+    left: 30px;
+    top: 150px;
+    border: 1px solid gray;
+}
+
+#function-value {
+    position: absolute;
+    left: 30px;
+    top: 80px;
+    font-family: mono;
+}
+
+#function-value textarea {
+    display: inline-block;
+    border: none;
+    vertical-align: baseline;
+    font-family: mono;
+    resize: none;
+    width: 550px;
+    background:#d4e9e2;
+    height: 19px;
+}
+#function-value textarea:hover {
+    background:rgb(148, 223, 229);
+}
