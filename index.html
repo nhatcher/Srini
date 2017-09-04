@@ -6,17 +6,24 @@
     <link href="style.css" rel="stylesheet">
     <script src="plotter.js"></script>
     <script src="calculator.js"></script>
+    <script src="vendor/codemirror/codemirror.js"></script>
+    <link href="vendor/codemirror/codemirror.css" rel="stylesheet">
     <script>
         document.addEventListener("DOMContentLoaded", function(event) { 
             var function_value = document.querySelector('#function-value textarea');
             function update() {
                 plotter('plot-area', {
-                    f: function_value.value
+                    f: editor.getValue().trim()
                 });
             }
-            function_value.onchange = function() {
+            var editor = CodeMirror.fromTextArea(function_value, {
+                lineNumbers: true
+            });
+            editor.setSize(400, 600);
+            editor.on('change', function() {
+                console.log('change');
                 update();
-            }
+            });
             update();
         });
     </script>
@@ -24,7 +31,9 @@
 <body>
     <div id="title">A function plotter</div>
     <div id="settings">
-      <div id="function-value"><span>f(x)=</span><textarea rows="1">3*x/(1+x*x)+sin(x)/x</textarea></div>
+        <div id="function-value">
+            <textarea>3*x/(1+x*x)+sin(x)/x</textarea>
+        </div>
     </div>
     <canvas id="plot-area" width="600" height="400"></canvas>
 </body>
