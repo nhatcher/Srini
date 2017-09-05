@@ -9,33 +9,45 @@
     <script src="vendor/codemirror/codemirror.js"></script>
     <link href="vendor/codemirror/codemirror.css" rel="stylesheet">
     <script>
+        function resize() {
+
+        }
         document.addEventListener("DOMContentLoaded", function(event) { 
-            var function_value = document.querySelector('#function-value textarea');
+            var editorEl = document.querySelector('#program-area textarea');
             function update() {
-                plotter('plot-area', {
+                plotter('plot-canvas', {
                     f: editor.getValue().trim()
                 });
             }
-            var editor = CodeMirror.fromTextArea(function_value, {
+            var editor = CodeMirror.fromTextArea(editorEl, {
                 lineNumbers: true
             });
-            editor.setSize(400, 600);
+            var program_area = document.querySelector('#program-area');
+            editor.setSize(program_area.clientWidth, program_area.clientHeight);
             editor.on('change', function() {
                 console.log('change');
                 update();
             });
+            var plot_area = document.querySelector('#plot-area');
+            var plot_canvas = document.querySelector('#plot-canvas');
+            plot_canvas.setAttribute('width', plot_area.clientWidth);
+            plot_canvas.setAttribute('height', plot_area.clientHeight);
             update();
         });
     </script>
 </head>
 <body>
-    <div id="title">A function plotter</div>
-    <div id="settings">
-        <div id="function-value">
-            <textarea>3*x/(1+x*x)+sin(x)/x</textarea>
-        </div>
+    <div id="header">
+        <div id="title">A function plotter</div>
     </div>
-    <canvas id="plot-area" width="600" height="400"></canvas>
+    <div id="program-area">
+        <textarea>3*x/(1+x*x)+sin(x)/x</textarea>
+    </div>
+    <div id="plot-area">
+        <canvas id="plot-canvas"></canvas>
+    </div>
+    <div id="footer">
+    </div>
 </body>
 </html>
 
