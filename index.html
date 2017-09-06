@@ -6,33 +6,12 @@
     <link href="style.css" rel="stylesheet">
     <script src="plotter.js"></script>
     <script src="calculator.js"></script>
+    <script src="main.js"></script>
     <script src="vendor/codemirror/codemirror.js"></script>
     <link href="vendor/codemirror/codemirror.css" rel="stylesheet">
     <script>
-        function resize() {
-
-        }
-        document.addEventListener("DOMContentLoaded", function(event) { 
-            var editorEl = document.querySelector('#program-area textarea');
-            function update() {
-                plotter('plot-canvas', {
-                    f: editor.getValue().trim()
-                });
-            }
-            var editor = CodeMirror.fromTextArea(editorEl, {
-                lineNumbers: true
-            });
-            var program_area = document.querySelector('#program-area');
-            editor.setSize(program_area.clientWidth, program_area.clientHeight);
-            editor.on('change', function() {
-                console.log('change');
-                update();
-            });
-            var plot_area = document.querySelector('#plot-area');
-            var plot_canvas = document.querySelector('#plot-canvas');
-            plot_canvas.setAttribute('width', plot_area.clientWidth);
-            plot_canvas.setAttribute('height', plot_area.clientHeight);
-            update();
+        document.addEventListener("DOMContentLoaded", function(event) {
+            main(event);
         });
     </script>
 </head>
