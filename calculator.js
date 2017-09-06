@@ -72,62 +72,64 @@
   }
 */
 var calculator = (function(){
-var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,3],$V1=[1,4],$V2=[1,5],$V3=[1,6],$V4=[1,8],$V5=[1,9],$V6=[1,10],$V7=[1,11],$V8=[1,12],$V9=[1,13],$Va=[5,6,7,8,9,10,11,13],$Vb=[5,6,7,13],$Vc=[5,6,7,8,9,13];
+var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,10],$V1=[1,9],$V2=[1,7],$V3=[1,8],$V4=[1,12],$V5=[1,13],$V6=[1,14],$V7=[1,15],$V8=[1,16],$V9=[1,17],$Va=[9,15,16,17,18,19,20,22],$Vb=[9,15,16,22],$Vc=[9,15,16,17,18,22];
 var parser = {trace: function trace() { },
 yy: {},
-symbols_: {"error":2,"expressions":3,"e":4,"EOF":5,"+":6,"-":7,"*":8,"/":9,"^":10,"!":11,"(":12,")":13,"NUMBER":14,"CONST":15,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",6:"+",7:"-",8:"*",9:"/",10:"^",11:"!",12:"(",13:")",14:"NUMBER",15:"CONST"},
-productions_: [0,[3,2],[4,3],[4,3],[4,3],[4,3],[4,3],[4,2],[4,2],[4,3],[4,1],[4,1],[4,4]],
+symbols_: {"error":2,"statements":3,"plot":4,"EOF":5,"PLOT":6,"[":7,"e":8,",":9,"{":10,"CONST":11,"NUMBER":12,"}":13,"]":14,"+":15,"-":16,"*":17,"/":18,"^":19,"!":20,"(":21,")":22,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",6:"PLOT",7:"[",9:",",10:"{",11:"CONST",12:"NUMBER",13:"}",14:"]",15:"+",16:"-",17:"*",18:"/",19:"^",20:"!",21:"(",22:")"},
+productions_: [0,[3,2],[4,12],[8,3],[8,3],[8,3],[8,3],[8,3],[8,2],[8,2],[8,3],[8,1],[8,1],[8,4]],
 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */) {
 /* this == yyval */
 
 var $0 = $$.length - 1;
 switch (yystate) {
 case 1:
- 
-           /* console.log(JSON.stringify($$[$0-1], null, '  '));*/
-           return $$[$0-1];
+
+            return $$[$0-1];
         
 break;
 case 2:
-this.$ = {type:'op', value: '+', children: [$$[$0-2], $$[$0]]};
+this.$ = {type: 'plot', expression: $$[$0-9], variable: $$[$0-6], xmin:Number($$[$0-4]), xmax: Number($$[$0-2])};
 break;
 case 3:
-this.$ = {type:'op', value: '-', children: [$$[$0-2], $$[$0]]};
+this.$ = {type:'op', value: '+', children: [$$[$0-2], $$[$0]]};
 break;
 case 4:
-this.$ = {type:'op', value: '*', children: [$$[$0-2], $$[$0]]};
+this.$ = {type:'op', value: '-', children: [$$[$0-2], $$[$0]]};
 break;
 case 5:
-this.$ = {type:'op', value: '/', children: [$$[$0-2], $$[$0]]};
+this.$ = {type:'op', value: '*', children: [$$[$0-2], $$[$0]]};
 break;
 case 6:
-this.$ = {type:'op', value: '^', children: [$$[$0-2], $$[$0]]};
+this.$ = {type:'op', value: '/', children: [$$[$0-2], $$[$0]]};
 break;
 case 7:
+this.$ = {type:'op', value: '^', children: [$$[$0-2], $$[$0]]};
+break;
+case 8:
 
           this.$ = {type:'function', value:'fact', children:$$[$0-1]};
         
 break;
-case 8:
+case 9:
 this.$ = {type:'unary', value: '-', children: $$[$0]};
 break;
-case 9:
+case 10:
 this.$ = $$[$0-1];
 break;
-case 10:
-this.$ = {type:'number', value:$$[$0]};
-break;
 case 11:
-this.$ = {type:'var', value:$$[$0]};
+this.$ = {type:'number', value:Number($$[$0])};
 break;
 case 12:
+this.$ = {type:'var', value:$$[$0]};
+break;
+case 13:
 this.$ = {type:'function', value:$$[$0-3], children:$$[$0-1]};
 break;
 }
 },
-table: [{3:1,4:2,7:$V0,12:$V1,14:$V2,15:$V3},{1:[3]},{5:[1,7],6:$V4,7:$V5,8:$V6,9:$V7,10:$V8,11:$V9},{4:14,7:$V0,12:$V1,14:$V2,15:$V3},{4:15,7:$V0,12:$V1,14:$V2,15:$V3},o($Va,[2,10]),o($Va,[2,11],{12:[1,16]}),{1:[2,1]},{4:17,7:$V0,12:$V1,14:$V2,15:$V3},{4:18,7:$V0,12:$V1,14:$V2,15:$V3},{4:19,7:$V0,12:$V1,14:$V2,15:$V3},{4:20,7:$V0,12:$V1,14:$V2,15:$V3},{4:21,7:$V0,12:$V1,14:$V2,15:$V3},o($Va,[2,7]),o($Va,[2,8]),{6:$V4,7:$V5,8:$V6,9:$V7,10:$V8,11:$V9,13:[1,22]},{4:23,7:$V0,12:$V1,14:$V2,15:$V3},o($Vb,[2,2],{8:$V6,9:$V7,10:$V8,11:$V9}),o($Vb,[2,3],{8:$V6,9:$V7,10:$V8,11:$V9}),o($Vc,[2,4],{10:$V8,11:$V9}),o($Vc,[2,5],{10:$V8,11:$V9}),o([5,6,7,8,9,10,13],[2,6],{11:$V9}),o($Va,[2,9]),{6:$V4,7:$V5,8:$V6,9:$V7,10:$V8,11:$V9,13:[1,24]},o($Va,[2,12])],
-defaultActions: {7:[2,1]},
+table: [{3:1,4:2,6:[1,3]},{1:[3]},{5:[1,4]},{7:[1,5]},{1:[2,1]},{8:6,11:$V0,12:$V1,16:$V2,21:$V3},{9:[1,11],15:$V4,16:$V5,17:$V6,18:$V7,19:$V8,20:$V9},{8:18,11:$V0,12:$V1,16:$V2,21:$V3},{8:19,11:$V0,12:$V1,16:$V2,21:$V3},o($Va,[2,11]),o($Va,[2,12],{21:[1,20]}),{10:[1,21]},{8:22,11:$V0,12:$V1,16:$V2,21:$V3},{8:23,11:$V0,12:$V1,16:$V2,21:$V3},{8:24,11:$V0,12:$V1,16:$V2,21:$V3},{8:25,11:$V0,12:$V1,16:$V2,21:$V3},{8:26,11:$V0,12:$V1,16:$V2,21:$V3},o($Va,[2,8]),o($Va,[2,9]),{15:$V4,16:$V5,17:$V6,18:$V7,19:$V8,20:$V9,22:[1,27]},{8:28,11:$V0,12:$V1,16:$V2,21:$V3},{11:[1,29]},o($Vb,[2,3],{17:$V6,18:$V7,19:$V8,20:$V9}),o($Vb,[2,4],{17:$V6,18:$V7,19:$V8,20:$V9}),o($Vc,[2,5],{19:$V8,20:$V9}),o($Vc,[2,6],{19:$V8,20:$V9}),o([9,15,16,17,18,19,22],[2,7],{20:$V9}),o($Va,[2,10]),{15:$V4,16:$V5,17:$V6,18:$V7,19:$V8,20:$V9,22:[1,30]},{9:[1,31]},o($Va,[2,13]),{12:[1,32]},{9:[1,33]},{12:[1,34]},{13:[1,35]},{14:[1,36]},{5:[2,2]}],
+defaultActions: {4:[2,1],36:[2,2]},
 parseError: function parseError(str, hash) {
     if (hash.recoverable) {
         this.trace(str);
@@ -604,34 +606,46 @@ var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
 case 0:/* skip whitespace */
 break;
-case 1:return 14
+case 1:return 12
 break;
-case 2:return 15
+case 2:return 6
 break;
-case 3:return 8
+case 3:return 11
 break;
-case 4:return 9
+case 4:return 17
 break;
-case 5:return 7
+case 5:return 18
 break;
-case 6:return 6
+case 6:return 16
 break;
-case 7:return 10
+case 7:return 15
 break;
-case 8:return 11
+case 8:return 19
 break;
-case 9:return 12
+case 9:return 20
 break;
-case 10:return 13
+case 10:return 21
 break;
-case 11:return 5
+case 11:return 22
 break;
-case 12:return 'INVALID'
+case 12:return 7
+break;
+case 13:return 14
+break;
+case 14:return 10
+break;
+case 15:return 13
+break;
+case 16:return 9
+break;
+case 17:return 5
+break;
+case 18:return 'INVALID'
 break;
 }
 },
-rules: [/^(?:\s+)/,/^(?:[0-9]+(\.[0-9]+)?\b)/,/^(?:[a-zA-Z]+)/,/^(?:\*)/,/^(?:\/)/,/^(?:-)/,/^(?:\+)/,/^(?:\^)/,/^(?:!)/,/^(?:\()/,/^(?:\))/,/^(?:$)/,/^(?:.)/],
-conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12],"inclusive":true}}
+rules: [/^(?:\s+)/,/^(?:([\-\+])?[0-9]+(\.[0-9]+)?\b)/,/^(?:plot\b)/,/^(?:[a-zA-Z]+)/,/^(?:\*)/,/^(?:\/)/,/^(?:-)/,/^(?:\+)/,/^(?:\^)/,/^(?:!)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?:$)/,/^(?:.)/],
+conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"inclusive":true}}
 });
 return lexer;
 })();

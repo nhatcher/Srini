@@ -85,7 +85,10 @@ function plotter(canvasId, options) {
           options[key] = options_default[key];
         }
     });
-    var formula = stringifyFormula(calculator.parse(options.f));
+    var program = calculator.parse(options.f);
+    options.xmin = program.xmin;
+    options.xmax = program.xmax;
+    var formula = stringifyFormula(program.expression);
 
     var sin = Math.sin,
         cos = Math.cos,
@@ -145,9 +148,18 @@ function plot(f, xmin, xmax) {
         step = (xmax-xmin)/N;
         datax = [],
         datay = [];
+
+    if (isNaN(ymin)) {
+        // In case the initial point is 0/0
+        ymin = f(xmin + step);
+        ymax = ymin;
+    }
     var x, y;
     for (x=xmin; x<=xmax; x += step) {
         y = f(x);
+        if (isNaN(y)){
+            continue;
+        }
         if (y<ymin) {
             ymin = y;
         }

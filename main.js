@@ -19,7 +19,6 @@ function main(event) {
     var program_area = document.querySelector('#program-area');
     editor.setSize(program_area.clientWidth, program_area.clientHeight);
     editor.on('change', function() {
-        console.log('change');
         update();
     });
     resize();

@@ -6,7 +6,8 @@
 %%
 
 \s+                   /* skip whitespace */
-[0-9]+("."[0-9]+)?\b  return 'NUMBER'
+([\-\+])?[0-9]+("."[0-9]+)?\b  return 'NUMBER'
+"plot"                return 'PLOT'
 [a-zA-Z]+             return 'CONST'
 "*"                   return '*'
 "/"                   return '/'
@@ -16,6 +17,11 @@
 "!"                   return '!'
 "("                   return '('
 ")"                   return ')'
+"["                   return '['
+"]"                   return ']'
+"{"                   return '{'
+"}"                   return '}'
+","                   return ','
 <<EOF>>               return 'EOF'
 .                     return 'INVALID'
 
@@ -29,16 +35,20 @@
 %right '!'
 %left UMINUS
 
-%start expressions
+%start statements
 
 %% /* language grammar */
 
-expressions
-    : e EOF
-        { 
-           /* console.log(JSON.stringify($1, null, '  '));*/
-           return $1;
+statements
+    : plot EOF
+        {
+            return $1;
         }
+    ;
+
+plot
+    : PLOT '[' e ',' '{' CONST ',' NUMBER ',' NUMBER '}' ']'
+        {$$ = {type: 'plot', expression: $3, variable: $6, xmin:Number($8), xmax: Number($10)};}
     ;
 
 e
@@ -61,7 +71,7 @@ e
     | '(' e ')'
         {$$ = $2;}
     | NUMBER
-        {$$ = {type:'number', value:$1};}
+        {$$ = {type:'number', value:Number($1)};}
     | CONST
         {$$ = {type:'var', value:$1};}
     | CONST '(' e ')'
