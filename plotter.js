@@ -88,9 +88,26 @@ var plotter = (function() {
         }
         return ticks;
     }
-
+    function notifyPosition(x, y) {
+        var info = document.getElementById('info');
+        x = x.toPrecision(3);
+        y = y.toPrecision(3);
+        info.textContent = `x: ${x}, y:${y}`;
+    }
+    function getSafeLabel(value, scale) {
+        // returns a safe label for a number
+        // 14.9999999  --> 15
+        // If number is really close to zero, we check if the general scale
+        // is close to zero
+        var s = parseFloat(value.toPrecision(14));
+        if (Math.abs(s)<1e-14 && scale>1e-10) {
+            s = 0;
+        }
+        return s + '';
+    }
     function plotter(canvasId, options) {
         var canvas = document.getElementById(canvasId);
+        var plot_area = document.getElementById('plot-area');
         var width = canvas.width;
         var height = canvas.height;
         var ctx = canvas.getContext('2d');
@@ -145,17 +162,29 @@ var plotter = (function() {
         function getScreenY(y) {
             return height - ((y - ymin)*yscale + options.padding.bottom);
         }
-
+        function getPlotX(x) {
+            return (x-options.padding.left)/xscale + xmin;
+        }
+        function getPlotY(y) {
+            return (-y+height-options.padding.bottom)/yscale + ymin;
+        }
         // grid
         var xticks = getPrettyTicks(xmin, xmax, width);
         var yticks = getPrettyTicks(ymin, ymax, height);
         
         ctx.strokeStyle = 'lightgrey';
         ctx.beginPath();
+        ctx.font = '12px monospace';
         for (var i=0; i<xticks.length; i++) {
             x = getScreenX(xticks[i]);
+            y = getScreenY(0);
             ctx.moveTo(x, 0);
             ctx.lineTo(x, height);
+            var label = getSafeLabel(xticks[i], xmax-xmin);
+            ctx.fillText(label, x, y + 12);
+            // ticks
+            ctx.moveTo(x, y + 10);
+            ctx.lineTo(x, y - 10);
         }
         for (var i=0; i<yticks.length; i++) {
             y = getScreenY(yticks[i]);
@@ -188,6 +217,30 @@ var plotter = (function() {
             ctx.lineTo(x, y);
         }
         ctx.stroke();
+        function getMousePos(canvas, evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+              x: evt.clientX - rect.left,
+              y: evt.clientY - rect.top
+            };
+          }
+        var rect = canvas.getBoundingClientRect();
+        var vertical_hint = document.getElementById('vertical-hint');
+        var horizontal_hint = document.getElementById('horizontal-hint');
+        plot_area.addEventListener('mousemove', function(evt) {
+            var mouseX = (evt.clientX-rect.left)/(rect.right-rect.left)*canvas.width;
+            var mouseY = (evt.clientY-rect.top)/(rect.bottom-rect.top)*canvas.height;
+            var plotX = getPlotX(mouseX);
+            var plotY = getPlotY(mouseY);
+            vertical_hint.style.left = mouseX + 'px';
+            horizontal_hint.style.top = mouseY + 'px';
+
+            notifyPosition(plotX, plotY);
+        });
+        plot_area.addEventListener('mouseleave', function(evt) {
+            vertical_hint.style.left = '-1px';
+            horizontal_hint.style.top = '-1px';
+        });
     };
 
     function plot(f, xmin, xmax) {
