@@ -78,7 +78,7 @@ var plotter = (function() {
             step = parseFloat('10e' + expt);
         }
         // Now we have the exact step, we look for the first multiple of the step
-        var xstart = Math.floor(xmin/step);
+        var xstart = Math.floor(xmin/step)*(step);
         if (xstart < 0) {
             xstart += step;
         }
@@ -176,10 +176,12 @@ var plotter = (function() {
         ctx.beginPath();
         ctx.font = '12px monospace';
         for (var i=0; i<xticks.length; i++) {
+            // line
             x = getScreenX(xticks[i]);
             y = getScreenY(0);
             ctx.moveTo(x, 0);
             ctx.lineTo(x, height);
+            // label
             var label = getSafeLabel(xticks[i], xmax-xmin);
             ctx.fillText(label, x, y + 12);
             // ticks
@@ -187,9 +189,17 @@ var plotter = (function() {
             ctx.lineTo(x, y - 10);
         }
         for (var i=0; i<yticks.length; i++) {
+            // line
             y = getScreenY(yticks[i]);
+            x = getScreenX(0);
             ctx.moveTo(0, y);
             ctx.lineTo(width, y);
+            // label
+            var label = getSafeLabel(yticks[i], ymax-ymin);
+            ctx.fillText(label, x + 2, y - 3);
+            // ticks
+            ctx.moveTo(x - 10, y);
+            ctx.lineTo(x + 10, y);
         }
         ctx.stroke();
 

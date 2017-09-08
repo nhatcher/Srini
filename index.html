@@ -20,7 +20,21 @@
         <div id="title">A function plotter</div>
     </div>
     <div id="program-area">
-        <textarea>plot[3*x/(1+x*x)+sin(x)/x, {x, -5, 5}]</textarea>
+        <textarea>
+                options = {
+                  linecolor: 'blue',
+                  xrange: [-5, 5],
+                  yrange: 'auto',
+                  axiscolor: 'grey',
+                  grid: true
+                  gridcolor: 'lightgrey',
+                  
+                }
+                
+                f(x) = 3*x/(1+x*x)+sin(x)/x
+                
+                plot[f, options]
+        </textarea>
     </div>
     <div id="plot-area">
         <canvas id="plot-canvas"></canvas>
