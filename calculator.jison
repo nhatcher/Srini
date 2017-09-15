@@ -6,10 +6,11 @@
 %%
 
 \s+                   /* skip whitespace */
-([\-\+])?[0-9]+("."[0-9]+)?\b  return 'NUMBER'
+\-?(?:[0-9]|[1-9][0-9]+)(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?\b return 'NUMBER'
 "plot"                return 'PLOT'
-"true"|"false"        return 'BOOL'
-[a-zA-Z]+             return 'CONST'
+"true"|"false"        return 'BOOLEAN'
+[a-zA-Z]+             return 'NAME'
+\"[a-zA-Z]+\"         return 'STRING'
 "*"                   return '*'
 "/"                   return '/'
 "-"                   return '-'
@@ -25,6 +26,7 @@
 ","                   return ','
 ":"                   return ':'
 "="                   return '='
+";"                   return ';'
 <<EOF>>               return 'EOF'
 .                     return 'INVALID'
 
@@ -55,104 +57,107 @@ statements
     ;
 
 statement
-    : var_declaration
+    : function_declaration
         { $$ = $1;}
-    | function_declaration
+    | plot_command
         { $$ = $1;}
-    | plot
-        { $$ = $1;}
-    ;
-
-var_declaration
-    : CONST '=' JSONObject
-        {$$ = {type: 'var', name:$1, value: $3};}
     ;
 
 function_declaration
-    : CONST '(' CONST ')' '=' e
+    : NAME '(' NAME ')' '=' expr ';'
         {$$ = {type: 'function_declaration', name: $1, variable: $3, expression: $6};}
     ;
 
-plot
-    : PLOT '[' e ',' '{' CONST ',' NUMBER ',' NUMBER '}' ']'
-        {$$ = {type: 'plot', expression: $3, variable: $6, xmin:Number($8), xmax: Number($10)};}
+value
+    : atomic_value
+        {$$ = $1;}
+    | array
+        {$$ = $1;}
     ;
 
-JSONObject
-    : '{' JSONMemberList '}'
-        {$$ = {type: 'json' value:$1};}
-    ;
-JSONMemberList
-    : JSONMember
-        {$$ = {$1[0]: $1[1]};}
-    | JSONMemberList JSONMember
-        {$$ = $1[$2[0]] = $2[1];}
-    ;
-
-JSONMember
-    : JSONString ":" JSONValue
-        { $$ = [$1, $3];}
-    ;
-JSONString
-    : CONST
-        { $$ = yyetx;}
-    ;
-
-JSONNumber
+atomic_value
     : NUMBER
         {$$ = Number($1);}
-    ;
-
-JSONValue
-    : BOOL
+    | STRING
+        {$$ = $1;}
+    | BOOLEAN
         {$$ = $1 === 'true';}
-    | JSONString
-        {$$ = $1;}
-    | JSONNumber
-        {$$ = $1;}
-    | JSONObject
-        {$$ = $1;}
-    | JSONArray
-        {$$ = $1;}
     ;
 
-JSONArray
-    : "[" JSONElementList "]"
-         { $$ = $2; }
+array
+    : '[' arrayList ']'
+        {$$ = $2;}
     ;
 
-JSONElementList
-    : JSONValue
+arrayList
+    : atomic_value
         { $$ = [$1];}
-    | JSONElementList "," JSONValue
+    | atomic_value ',' arrayList
+        { $$ = $3.push($1);}
+    ;
+
+plot_command
+    : PLOT '(' plot_functions ',' option_list ')' ';'
+        { $$ = {type:"plot", fun: $3, options: $5};}
+    ;
+
+plot_functions
+    : function_list_member
+        {$$ = {type: 'function_list', list:[$1]};}
+    | '[' function_list ']'
+        {$$ = {type: 'function_list', list:$1};}
+    ;
+
+option_list
+    : option_list_member
+        { $$ = [$1];}
+    | option_list ',' option_list_member
         { $$ = $1.push($3);}
     ;
 
+option_list_member
+    : NAME '=' value
+        {$$ = {type:"option", key:$1, value:$3};}
+    ;
 
-e
-    : e '+' e
+function_list
+    : function_list_member
+        {$$ = [$1];}
+    | function_list ',' function_list_member
+        { $$ = $1.push($3);}
+    ;
+
+function_list_member
+    : NAME 
+        {$1 = {value:$1, options: {}};}
+    | '{' NAME ',' option_list '}'
+        {$1 = {value: $2, options: $4};}
+    ;
+
+expr
+    : expr '+' expr
         {$$ = {type:'op', value: '+', children: [$1, $3]};}
-    | e '-' e
+    | expr '-' expr
         {$$ = {type:'op', value: '-', children: [$1, $3]};}
-    | e '*' e
+    | expr '*' expr
         {$$ = {type:'op', value: '*', children: [$1, $3]};}
-    | e '/' e
+    | expr '/' expr
         {$$ = {type:'op', value: '/', children: [$1, $3]};}
-    | e '^' e
+    | expr '^' expr
         {$$ = {type:'op', value: '^', children: [$1, $3]};}
-    | e '!'
+    | expr '!'
         {{
           $$ = {type:'function', value:'fact', children:$1};
         }}
-    | '-' e %prec UMINUS
+    | '-' expr %prec UMINUS
         {$$ = {type:'unary', value: '-', children: $2};}
-    | '(' e ')'
+    | '(' expr ')'
         {$$ = $2;}
     | NUMBER
         {$$ = {type:'number', value:Number($1)};}
-    | CONST
+    | NAME
         {$$ = {type:'var', value:$1};}
-    | CONST '(' e ')'
+    | NAME '(' expr ')'
         {$$ = {type:'function', value:$1, children:$3};}
     ;
 

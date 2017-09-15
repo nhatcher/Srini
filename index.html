@@ -2,7 +2,7 @@
 <html lang="en-us">
 <head>
     <meta charset="utf-8">
-    <title>A simple function plaotter</title>
+    <title>A simple function plotter</title>
     <link href="style.css" rel="stylesheet">
     <script src="plotter.js"></script>
     <script src="calculator.js"></script>
@@ -21,20 +21,11 @@
     </div>
     <div id="program-area">
         <textarea>
-                options = {
-                  linecolor: 'blue',
-                  xrange: [-5, 5],
-                  yrange: 'auto',
-                  axiscolor: 'grey',
-                  grid: true
-                  gridcolor: 'lightgrey',
-                  
-                }
-                
-                f(x) = 3*x/(1+x*x)+sin(x)/x
-                
-                plot[f, options]
-        </textarea>
+f(x) = 3*x/(1+x*x)+sin(x)/x
+g(x) = 5*exp(-x*x)
+
+plot([{f, color="blue"}, {g, color="red"}], xrange=[-5, 5])
+</textarea>
     </div>
     <div id="plot-area">
         <canvas id="plot-canvas"></canvas>
