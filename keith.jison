@@ -1,5 +1,11 @@
 
-/* description: Parses mathematical expressions. */
+/* 
+Grammar for the Keith Programming Language (KPL)
+================================================
+
+A language for mathematical expressions
+
+*/
 
 /* lexical grammar */
 %lex
@@ -10,7 +16,7 @@
 "plot"                return 'PLOT'
 "true"|"false"        return 'BOOLEAN'
 [a-zA-Z]+             return 'NAME'
-\"[a-zA-Z]+\"         return 'STRING'
+\"[a-zA-Z#_\-]+\"     return 'STRING'
 "*"                   return '*'
 "/"                   return '/'
 "-"                   return '-'
@@ -79,7 +85,7 @@ atomic_value
     : NUMBER
         {$$ = Number($1);}
     | STRING
-        {$$ = $1;}
+        {$$ = $1.slice(1, -1);}
     | BOOLEAN
         {$$ = $1 === 'true';}
     ;
@@ -98,14 +104,14 @@ arrayList
 
 plot_command
     : PLOT '(' plot_functions ',' option_list ')' ';'
-        { $$ = {type:"plot", fun: $3, options: $5};}
+        { $$ = {type:"plot", arguments:$3, options: $5};}
     ;
 
 plot_functions
     : function_list_member
-        {$$ = {type: 'function_list', list:[$1]};}
+        {$$ = [$1];}
     | '[' function_list ']'
-        {$$ = {type: 'function_list', list:$1};}
+        {$$ = $1;}
     ;
 
 option_list
@@ -117,7 +123,7 @@ option_list
 
 option_list_member
     : NAME '=' value
-        {$$ = {type:"option", key:$1, value:$3};}
+        {$$ = {key:$1, value:$3};}
     ;
 
 function_list
@@ -129,9 +135,9 @@ function_list
 
 function_list_member
     : NAME 
-        {$1 = {value:$1, options: {}};}
+        {$$ = {value:$1, options: {}};}
     | '{' NAME ',' option_list '}'
-        {$1 = {value: $2, options: $4};}
+        {$$ = {value: $2, options: $4};}
     ;
 
 expr
@@ -147,7 +153,7 @@ expr
         {$$ = {type:'op', value: '^', children: [$1, $3]};}
     | expr '!'
         {{
-          $$ = {type:'function', value:'fact', children:$1};
+          $$ = {type:'function', value:'gamma', children:$1};
         }}
     | '-' expr %prec UMINUS
         {$$ = {type:'unary', value: '-', children: $2};}
@@ -156,7 +162,7 @@ expr
     | NUMBER
         {$$ = {type:'number', value:Number($1)};}
     | NAME
-        {$$ = {type:'var', value:$1};}
+        {$$ = {type:'variable', value:$1};}
     | NAME '(' expr ')'
         {$$ = {type:'function', value:$1, children:$3};}
     ;

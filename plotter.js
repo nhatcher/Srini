@@ -1,66 +1,5 @@
 var plotter = (function() {
 
-    function getJSFunctionName(name) {
-        switch(name) {
-        case 'sin':
-        case 'cos':
-        case 'log':
-        case 'pow':
-        case 'exp':
-        case 'tan':
-        case 'tanh':
-        case 'cosh':
-        case 'sinh':
-        case 'atanh':
-        case 'acosh':
-        case 'asinh':
-        case 'atan':
-        case 'acos':
-        case 'asin':
-        case 'abs':
-        case 'ceil':
-        case 'floor':
-        case 'max':
-        case 'min':
-        case 'sqrt':
-            return 'Math.' + name;
-        default:
-        throw new Error('Undefined function ' + name);
-        }
-    }
-
-    function getJSVarName(name) {
-        var knownValues = {
-            "PI": Math.PI,
-            "E": Math.E
-        }
-        if (name in knownValues) {
-            return knownValues[name] + '';
-        } else {
-            return name;
-        }
-    }
-
-    function stringifyFormula(o) {
-        switch(o.type) {
-            case 'op':
-                return '(' + stringifyFormula(o.children[0]) + o.value + stringifyFormula(o.children[1]) + ')';
-                break;
-            case 'function':
-                return getJSFunctionName(o.value) + '(' + stringifyFormula(o.children) + ')'
-                break;
-            case 'unary':
-                return '-' + stringifyFormula(o.children);
-            case 'var':
-                return getJSVarName(o.value);
-            case 'number':
-                return o.value;
-            default:
-                throw new Error('Unexpected type: ' + o.type)
-
-        }
-    }
-
     function getPrettyTicks(xmin, xmax, width) {
         // This function gives a hint of a good set of marks.
         var spacing = 50; // we guess that a nice spacing is ~ 20px;
@@ -135,7 +74,7 @@ var plotter = (function() {
             options[key] = options_default[key];
             }
         });
-        var program = calculator.parse(options.f);
+        var program = keith.parse(options.f);
         options.xmin = program.xmin;
         options.xmax = program.xmax;
         var formula = stringifyFormula(program.expression);

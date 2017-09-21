@@ -71,7 +71,7 @@
     recoverable: (boolean: TRUE when the parser has a error recovery rule available for this particular error)
   }
 */
-var calculator = (function(){
+var keith = (function(){
 var parser = {trace: function trace() { },
 yy: {},
 symbols_: {"error":2,"program":3,"statements":4,"EOF":5,"statement":6,"function_declaration":7,"plot_command":8,"NAME":9,"(":10,")":11,"=":12,"expr":13,";":14,"value":15,"atomic_value":16,"array":17,"NUMBER":18,"STRING":19,"BOOLEAN":20,"[":21,"arrayList":22,"]":23,",":24,"PLOT":25,"plot_functions":26,"option_list":27,"function_list_member":28,"function_list":29,"option_list_member":30,"{":31,"}":32,"+":33,"-":34,"*":35,"/":36,"^":37,"!":38,"$accept":0,"$end":1},
@@ -101,7 +101,7 @@ case 8:this.$ = $$[$0];
 break;
 case 9:this.$ = Number($$[$0]);
 break;
-case 10:this.$ = $$[$0];
+case 10:this.$ = $$[$0].slice(1, -1);
 break;
 case 11:this.$ = $$[$0] === 'true';
 break;
@@ -111,25 +111,25 @@ case 13: this.$ = [$$[$0]];
 break;
 case 14: this.$ = $$[$0].push($$[$0-2]);
 break;
-case 15: this.$ = {type:"plot", fun: $$[$0-4], options: $$[$0-2]};
+case 15: this.$ = {type:"plot", arguments:$$[$0-4], options: $$[$0-2]};
 break;
-case 16:this.$ = {type: 'function_list', list:[$$[$0]]};
+case 16:this.$ = [$$[$0]];
 break;
-case 17:this.$ = {type: 'function_list', list:$$[$0-2]};
+case 17:this.$ = $$[$0-2];
 break;
 case 18: this.$ = [$$[$0]];
 break;
 case 19: this.$ = $$[$0-2].push($$[$0]);
 break;
-case 20:this.$ = {type:"option", key:$$[$0-2], value:$$[$0]};
+case 20:this.$ = {key:$$[$0-2], value:$$[$0]};
 break;
 case 21:this.$ = [$$[$0]];
 break;
 case 22: this.$ = $$[$0-2].push($$[$0]);
 break;
-case 23:$$[$0] = {value:$$[$0], options: {}};
+case 23:this.$ = {value:$$[$0], options: {}};
 break;
-case 24:$$[$0-4] = {value: $$[$0-3], options: $$[$0-1]};
+case 24:this.$ = {value: $$[$0-3], options: $$[$0-1]};
 break;
 case 25:this.$ = {type:'op', value: '+', children: [$$[$0-2], $$[$0]]};
 break;
@@ -675,7 +675,7 @@ case 23:return 'INVALID'
 break;
 }
 },
-rules: [/^(?:\s+)/,/^(?:([\-\+])?[0-9]+(\.[0-9]+)?\b)/,/^(?:plot\b)/,/^(?:true|false\b)/,/^(?:[a-zA-Z]+)/,/^(?:\\'\[a-zA-Z_#\]\+\\')/,/^(?:\*)/,/^(?:\/)/,/^(?:-)/,/^(?:\+)/,/^(?:\^)/,/^(?:!)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?::)/,/^(?:=)/,/^(?:;)/,/^(?:$)/,/^(?:.)/],
+rules: [/^(?:\s+)/,/^(?:-?(?:[0-9]|[1-9][0-9]+)(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?\b)/,/^(?:plot\b)/,/^(?:true|false\b)/,/^(?:[a-zA-Z]+)/,/^(?:"[a-zA-Z#_\-]+")/,/^(?:\*)/,/^(?:\/)/,/^(?:-)/,/^(?:\+)/,/^(?:\^)/,/^(?:!)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?::)/,/^(?:=)/,/^(?:;)/,/^(?:$)/,/^(?:.)/],
 conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],"inclusive":true}}
 };
 return lexer;
@@ -690,9 +690,9 @@ return new Parser;
 
 
 if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
-exports.parser = calculator;
-exports.Parser = calculator.Parser;
-exports.parse = function () { return calculator.parse.apply(calculator, arguments); };
+exports.parser = keith;
+exports.Parser = keith.Parser;
+exports.parse = function () { return keith.parse.apply(keith, arguments); };
 exports.main = function commonjsMain(args) {
     if (!args[1]) {
         console.log('Usage: '+args[0]+' FILE');
