@@ -2,7 +2,7 @@ ROADMAP
 =======
 
 
-FUNCTION PLOTER PHASE
+FUNCTION PLOTTER PHASE
 ---------------------
 1. Create a simple function plotter using eval and dumb plotting algorithm (done)
 2. Parse function input (jison or equvalent), use codemirror or equivalent (done)
