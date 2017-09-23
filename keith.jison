@@ -16,7 +16,7 @@ A language for mathematical expressions
 "plot"                return 'PLOT'
 "true"|"false"        return 'BOOLEAN'
 [a-zA-Z]+             return 'NAME'
-\"[a-zA-Z#_\-]+\"     return 'STRING'
+\"[a-zA-Z#_\-0-9]+\"  return 'STRING'
 "*"                   return '*'
 "/"                   return '/'
 "-"                   return '-'

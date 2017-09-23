@@ -25,7 +25,13 @@
 f(x) = 3*x/(1+x*x)+sin(x)/x;
 g(x) = 5*exp(-x*x);
 
-plot([{f, color="blue"}, {g, color="red"}], xrange=[-5, 5]);
+plot(
+    [
+      {f, color="#4F6BB8", width=8},
+      {g, color="red"}
+    ],
+    xrange=[-5, 3]
+);
 </textarea>
     </div>
     <div id="plot-area">

@@ -29,6 +29,18 @@ let compiler = (function() {
         pi: Math.PI
     }
 
+    function make_function_options(opt) {
+        // default options
+        let options = {
+            color: '#ccc',
+            width: 1
+        };
+        for (let i=0; i<opt.length; i++) {
+            options[opt[i].key] = opt[i].value;
+        }
+        return options;
+    }
+
     function getJSFunctionName(name) {
         if (globalFunctions.includes(name)) {
             return 'Math.' + name;
@@ -175,12 +187,13 @@ let compiler = (function() {
     local['${name}'] = ${name};`;
 
             } else if (type === 'plot_command') {
-                let funs = node.list;
+                let list = node.list;
                 // let options = fillDefaults(node.options);
-                for (let i=0; i<funs.length; i++) {
-                    let fnon = funs[i];
+                for (let i=0; i<list.length; i++) {
+                    let fnon = list[i];
                     let f_value = fnon.value;
-                    plot_functions += `functions.push({value:${f_value}});\n`;
+                    let f_options = JSON.stringify(make_function_options(fnon.options));
+                    plot_functions += `functions.push({value:${f_value}, options:${f_options}});\n`;
                 }
 
             } else {

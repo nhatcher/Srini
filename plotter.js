@@ -74,8 +74,13 @@ var plotter = (function() {
             options[key] = options_default[key];
             }
         });
-
-        let context = compiler.compile(options.program);
+        let context;
+       // try {
+            context = compiler.compile(options.program);
+       /* } catch(e) {
+            console.error(e);
+            return;
+        }*/
         let context_options = context.options;
 
         let xmin = options.xmin,
@@ -86,7 +91,6 @@ var plotter = (function() {
 
         // TODO: Only plots first function
         let list = context['functions'];
-        let function_options = context['functions'][0].options;
         // FIXME: So far ignores all arguments
         var data = [];
         let ymin, ymax;
@@ -168,8 +172,10 @@ var plotter = (function() {
         for (let i=0; i<data.length; i++) {
             let datax = data[i].datax,
                 datay = data[i].datay;
-                l = datax.length;
-            ctx.strokeStyle = options.linecolor;
+                l = datax.length,
+                function_opt = context['functions'][i].options
+            ctx.strokeStyle = function_opt['color'];
+            ctx.lineWidth = function_opt['width'];
             ctx.beginPath();
             ctx.moveTo(getScreenX(datax[0]), getScreenY(datay[0]));
             for (let j=1; j<l; j++) {
