@@ -63,7 +63,12 @@ let compiler = (function() {
                 return '(' + stringifyFormula(o.children[0]) + o.value + stringifyFormula(o.children[1]) + ')';
                 break;
             case 'function':
-                return getJSFunctionName(o.value) + '(' + stringifyFormula(o.children) + ')'
+                let c = o.children;
+                let args = [];
+                for (let i=0; i<c.length; i++) {
+                    args.push(stringifyFormula(c[i]));
+                }
+                return getJSFunctionName(o.value) + '(' + args.join(', ') + ')'
                 break;
             case 'unary':
                 return '-' + stringifyFormula(o.children);
@@ -105,7 +110,6 @@ let compiler = (function() {
                 name = node.name;
                 if (!globalFunctions.includes(name)) {
                     if (!(name in localFun)) {
-                        console.log(node);
                         throw new Error('Undefined function name: ' + name);
                     }
                 }

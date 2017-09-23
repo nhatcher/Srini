@@ -171,8 +171,14 @@ expr
         {$$ = {type:'number', value:Number($1)};}
     | NAME
         {$$ = {type:'variable', value:$1};}
-    | NAME '(' expr ')'
+    | NAME '(' expr_list ')'
         {$$ = {type:'function', value:$1, children:$3};}
     ;
 
+expr_list
+    : expr
+        {$$ = [$1];}
+    | expr_list ',' expr
+        { $1.push($3); $$ = $1; }
+    ;
 
