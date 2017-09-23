@@ -43,13 +43,13 @@ let compiler = (function() {
 
     function make_plot_options(opt) {
         // default options
-        console.log(opt, opt.length);
         let options = {
 
         }
         for (let i=0; i<opt.length; i++) {
             options[opt[i].key] = opt[i].value;
         }
+        // xrange is a must!
         if (!('xrange'  in options)) {
             throw new Error('Missing xrange!');
         }
@@ -236,7 +236,6 @@ ${plot_options}
         options: options
     };
 })()`;
-console.log(program);
         var context = window.eval(program);
         return context;
     }
