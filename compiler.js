@@ -41,6 +41,26 @@ let compiler = (function() {
         return options;
     }
 
+    function make_plot_options(opt) {
+        // default options
+        console.log(opt, opt.length);
+        let options = {
+
+        }
+        for (let i=0; i<opt.length; i++) {
+            options[opt[i].key] = opt[i].value;
+        }
+        if (!('xrange'  in options)) {
+            throw new Error('Missing xrange!');
+        }
+        let xrange = options.xrange;
+        if (!(xrange.length === 2 && typeof xrange[0] === 'number' && typeof xrange[1] == 'number')) {
+            throw new Error('Invalid xrange!');
+        }
+        return options;
+        
+    }
+
     function getJSFunctionName(name) {
         if (globalFunctions.includes(name)) {
             return 'Math.' + name;
@@ -164,18 +184,14 @@ let compiler = (function() {
         }
         return;
     }
-    function fillDefaults(options) {
-        let defaultOptions = {
-            
-        }
-        return options;
-    }
+
     compiler.compile = function(code) {
         let ast = keith.parse(code);
         semantic_check(ast);
         let options = {};
         let functions = '';
         let plot_functions = '';
+        let plot_options = '';
         for (let i=0; i<ast.length; i++) {
             let node = ast[i];
             let type = node.type;
@@ -192,7 +208,8 @@ let compiler = (function() {
 
             } else if (type === 'plot_command') {
                 let list = node.list;
-                // let options = fillDefaults(node.options);
+                let p_options = JSON.stringify(make_plot_options(node.options));
+                plot_options = `let options = ${p_options}`;
                 for (let i=0; i<list.length; i++) {
                     let fnon = list[i];
                     let f_value = fnon.value;
@@ -213,10 +230,13 @@ ${functions}
 
 ${plot_functions}
 
+${plot_options}
     return {
-        functions: functions
+        functions: functions,
+        options: options
     };
 })()`;
+console.log(program);
         var context = window.eval(program);
         return context;
     }

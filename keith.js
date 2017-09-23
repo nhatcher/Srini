@@ -101,7 +101,7 @@ case 8:this.$ = $$[$0];
 break;
 case 9:this.$ = Number($$[$0]);
 break;
-case 10:this.$ = -Number($$[$0-1]);
+case 10:this.$ = -$$[$0];
 break;
 case 11:this.$ = $$[$0].slice(1, -1);
 break;

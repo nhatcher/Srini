@@ -82,9 +82,10 @@ var plotter = (function() {
             return;
         }*/
         let context_options = context.options;
+        let xrange = context_options.xrange;
 
-        let xmin = options.xmin,
-            xmax = options.xmax,
+        let xmin = xrange[0],
+            xmax = xrange[1],
             xwidth = xmax - xmin;
             plotwidth = width - options.padding.left - options.padding.right;
             xscale = plotwidth/xwidth;

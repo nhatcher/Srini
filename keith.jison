@@ -85,7 +85,7 @@ atomic_value
     : NUMBER
         {$$ = Number($1);}
     | '-' NUMBER
-        {$$ = -Number($1);}
+        {$$ = -$2;}
     | STRING
         {$$ = $1.slice(1, -1);}
     | BOOLEAN
