@@ -41,7 +41,7 @@ let compiler = (function() {
         if (name in globalConstantsDict) {
             return globalConstantsDict[name] + '';
         } else {
-            return name;
+            return 'x';
         }
     }
 
@@ -68,6 +68,7 @@ let compiler = (function() {
     function semantic_check_function(node, variable, localVar, localFun) {
         // checks that all functions and variables used are actually defined.
         let type = node.type;
+        let name;
         if (variable in localVar) {
             throw new Error('Variable already in use: ' + variable);
         }
@@ -80,16 +81,25 @@ let compiler = (function() {
             case 'unary':
                semantic_check_function(c[0], variable, localVar, localFun);
             break;
+            case 'function_declaration':
+                name = node.name;
+                if (globalFunctions.includes(name)) {
+                    throw new Error('Function already exists: ' + name);
+                } else if (name in localFun) {
+                    throw new Error('Function already exists: ' + name);
+                }
+            break;
             case 'function':
-                let name = node.value;
-                if (!globalFunctions.inludes(name)) {
+                name = node.name;
+                if (!globalFunctions.includes(name)) {
                     if (!(name in localFun)) {
-                        throw new Error('Undefined function name: ');
+                        console.log(node);
+                        throw new Error('Undefined function name: ' + name);
                     }
                 }
             break;
             case 'variable':
-                let name = node.value;
+                name = node.value;
                 if (name !== variable) {
                     if (!(name in globalConstantsDict)) {
                         if (!(name in localVar)) {
@@ -148,7 +158,8 @@ let compiler = (function() {
         let ast = keith.parse(code);
         semantic_check(ast);
         let options = {};
-        let funtions = [];
+        let functions = '';
+        let plot_functions = '';
         for (let i=0; i<ast.length; i++) {
             let node = ast[i];
             let type = node.type;
@@ -158,14 +169,19 @@ let compiler = (function() {
                 let expr = node.expression;
                 let formulaString = stringifyFormula(expr);
                 functions += `
-    let ${name} = function () {
+    let ${name} = function(x) {
         return ${formulaString};
     };
     local['${name}'] = ${name};`;
 
             } else if (type === 'plot_command') {
-                let funs = node.arguments;
-                let options = fillDefaults(node.options);
+                let funs = node.list;
+                // let options = fillDefaults(node.options);
+                for (let i=0; i<funs.length; i++) {
+                    let fnon = funs[i];
+                    let f_value = fnon.value;
+                    plot_functions += `functions.push({value:${f_value}});\n`;
+                }
 
             } else {
                 throw new Error ('Invalid type of statement: ' + type);
@@ -173,12 +189,16 @@ let compiler = (function() {
         }
         let program = `
 (function(){
-    let context = {};
     let local = {};
+    let functions = [];
     
 ${functions}
 
-    return context;
+${plot_functions}
+
+    return {
+        functions: functions
+    };
 })()`;
         var context = window.eval(program);
         return context;

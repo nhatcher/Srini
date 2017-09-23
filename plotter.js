@@ -74,20 +74,21 @@ var plotter = (function() {
             options[key] = options_default[key];
             }
         });
-        var program = keith.parse(options.f);
-        options.xmin = program.xmin;
-        options.xmax = program.xmax;
-        var formula = stringifyFormula(program.expression);
 
-        // FIXME: Hard eval the function
-        eval('var f = function(x) { return ' + formula + ';}');
+        let context = compiler.compile(options.program);
+        window.ccc = context;
+        let context_options = context.options;
 
-        var xmin = options.xmin,
+        let xmin = options.xmin,
             xmax = options.xmax,
             xwidth = xmax - xmin;
             plotwidth = width - options.padding.left - options.padding.right;
             xscale = plotwidth/xwidth;
 
+        // TODO: Only plots first function
+        let f = context['functions'][0].value;
+        let function_options = context['functions'][0].options;
+        // FIXME: So far ignores all arguments
         var ret = plot(f, options.xmin, options.xmax);
         var ymin = ret.ymin,
             ymax = ret.ymax,

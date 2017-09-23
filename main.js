@@ -10,7 +10,7 @@ function main(event) {
     var editorEl = document.querySelector('#program-area textarea');
     function update() {
         plotter('plot-canvas', {
-            f: editor.getValue().trim()
+            program: editor.getValue().trim()
         });
     }
     var editor = CodeMirror.fromTextArea(editorEl, {

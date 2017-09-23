@@ -98,27 +98,27 @@ array
 arrayList
     : atomic_value
         { $$ = [$1];}
-    | atomic_value ',' arrayList
-        { $$ = $3.push($1);}
+    | arrayList ',' atomic_value
+        { $1.push($3); $$ = $1;}
     ;
 
 plot_command
     : PLOT '(' plot_functions ',' option_list ')' ';'
-        { $$ = {type:"plot", arguments:$3, options: $5};}
+        { $$ = {type:"plot_command", list:$3, options: $5};}
     ;
 
 plot_functions
     : function_list_member
         {$$ = [$1];}
     | '[' function_list ']'
-        {$$ = $1;}
+        {$$ = $2;}
     ;
 
 option_list
     : option_list_member
         { $$ = [$1];}
     | option_list ',' option_list_member
-        { $$ = $1.push($3);}
+        { $1.push($3); $$ = $1;}
     ;
 
 option_list_member
@@ -130,7 +130,7 @@ function_list
     : function_list_member
         {$$ = [$1];}
     | function_list ',' function_list_member
-        { $$ = $1.push($3);}
+        { $1.push($3); $$ =$1; }
     ;
 
 function_list_member
