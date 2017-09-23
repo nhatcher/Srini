@@ -76,7 +76,6 @@ var plotter = (function() {
         });
 
         let context = compiler.compile(options.program);
-        window.ccc = context;
         let context_options = context.options;
 
         let xmin = options.xmin,
@@ -86,13 +85,24 @@ var plotter = (function() {
             xscale = plotwidth/xwidth;
 
         // TODO: Only plots first function
-        let f = context['functions'][0].value;
+        let list = context['functions'];
         let function_options = context['functions'][0].options;
         // FIXME: So far ignores all arguments
-        var ret = plot(f, options.xmin, options.xmax);
-        var ymin = ret.ymin,
-            ymax = ret.ymax,
-            yheight = ymax - ymin,
+        var data = [];
+        let ymin, ymax;
+        for (let i=0; i<list.length; i++) {
+            let ret = plot(list[i].value, options.xmin, options.xmax);
+            if (i == 0) {
+                ymin = ret.ymin;
+                ymax = ret.ymax;
+            } else {
+                ymin = Math.min(ret.ymin, ymin);
+                ymax = Math.max(ret.ymax, ymax);
+            }
+            data.push({datax:ret.datax, datay:ret.datay});
+        }
+
+        let yheight = ymax - ymin,
             plotheight = height - options.padding.top - options.padding.bottom;
             yscale = plotheight/yheight;
 
@@ -154,19 +164,22 @@ var plotter = (function() {
         ctx.lineTo(x0, getScreenY(ymax));
         ctx.stroke();
 
-        // function
-        var datax = ret.datax,
-            datay = ret.datay;
-            l = datax.length;
-        ctx.strokeStyle = options.linecolor;
-        ctx.beginPath();
-        ctx.moveTo(getScreenX(datax[0]), getScreenY(datay[0]));
-        for (var i=1; i<l; i++) {
-            x = getScreenX(datax[i]);
-            y = getScreenY(datay[i]);
-            ctx.lineTo(x, y);
+        // functions
+        for (let i=0; i<data.length; i++) {
+            let datax = data[i].datax,
+                datay = data[i].datay;
+                l = datax.length;
+            ctx.strokeStyle = options.linecolor;
+            ctx.beginPath();
+            ctx.moveTo(getScreenX(datax[0]), getScreenY(datay[0]));
+            for (let j=1; j<l; j++) {
+                x = getScreenX(datax[j]);
+                y = getScreenY(datay[j]);
+                ctx.lineTo(x, y);
+            }
+            ctx.stroke();
         }
-        ctx.stroke();
+
         function getMousePos(canvas, evt) {
             var rect = canvas.getBoundingClientRect();
             return {
@@ -194,8 +207,8 @@ var plotter = (function() {
     };
 
     function plot(f, xmin, xmax) {
-        var N = 10000; 
-        var ymin = f(xmin),
+        let N = 10000,
+            ymin = f(xmin),
             ymax = ymin,
             step = (xmax-xmin)/N,
             datax = [],
@@ -228,7 +241,6 @@ var plotter = (function() {
         return {
             ymax: ymax,
             ymin: ymin,
-            step: step,
             datax: datax,
             datay: datay
         }
