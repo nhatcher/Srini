@@ -12,7 +12,7 @@ A language for mathematical expressions
 %%
 
 \s+                   /* skip whitespace */
-\-?(?:[0-9]|[1-9][0-9]+)(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?\b return 'NUMBER'
+(?:[0-9]|[1-9][0-9]+)(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?\b return 'NUMBER'
 "plot"                return 'PLOT'
 "true"|"false"        return 'BOOLEAN'
 [a-zA-Z]+             return 'NAME'
@@ -84,6 +84,8 @@ value
 atomic_value
     : NUMBER
         {$$ = Number($1);}
+    | '-' NUMBER
+        {$$ = -Number($1);}
     | STRING
         {$$ = $1.slice(1, -1);}
     | BOOLEAN
@@ -152,11 +154,17 @@ expr
     | expr '^' expr
         {$$ = {type:'op', value: '^', children: [$1, $3]};}
     | expr '!'
-        {{
-          $$ = {type:'function', value:'gamma', children:$1};
-        }}
+        {$$ = {type:'function', value:'gamma', children:$1};}
     | '-' expr %prec UMINUS
-        {$$ = {type:'unary', value: '-', children: $2};}
+        {{
+            if($2.type === 'unary') {
+                throw new Error('Inavlid double unary');
+            } else {
+                $$ = {type:'unary', value: '-', children: $2};
+            }
+        }}
+    | '+' expr %prec UMINUS
+        {$$ = $2;}
     | '(' expr ')'
         {$$ = $2;}
     | NUMBER
