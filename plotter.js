@@ -1,66 +1,5 @@
 var plotter = (function() {
 
-    function getJSFunctionName(name) {
-        switch(name) {
-        case 'sin':
-        case 'cos':
-        case 'log':
-        case 'pow':
-        case 'exp':
-        case 'tan':
-        case 'tanh':
-        case 'cosh':
-        case 'sinh':
-        case 'atanh':
-        case 'acosh':
-        case 'asinh':
-        case 'atan':
-        case 'acos':
-        case 'asin':
-        case 'abs':
-        case 'ceil':
-        case 'floor':
-        case 'max':
-        case 'min':
-        case 'sqrt':
-            return 'Math.' + name;
-        default:
-        throw new Error('Undefined function ' + name);
-        }
-    }
-
-    function getJSVarName(name) {
-        var knownValues = {
-            "PI": Math.PI,
-            "E": Math.E
-        }
-        if (name in knownValues) {
-            return knownValues[name] + '';
-        } else {
-            return name;
-        }
-    }
-
-    function stringifyFormula(o) {
-        switch(o.type) {
-            case 'op':
-                return '(' + stringifyFormula(o.children[0]) + o.value + stringifyFormula(o.children[1]) + ')';
-                break;
-            case 'function':
-                return getJSFunctionName(o.value) + '(' + stringifyFormula(o.children) + ')'
-                break;
-            case 'unary':
-                return '-' + stringifyFormula(o.children);
-            case 'var':
-                return getJSVarName(o.value);
-            case 'number':
-                return o.value;
-            default:
-                throw new Error('Unexpected type: ' + o.type)
-
-        }
-    }
-
     function getPrettyTicks(xmin, xmax, width) {
         // This function gives a hint of a good set of marks.
         var spacing = 50; // we guess that a nice spacing is ~ 20px;
@@ -78,7 +17,7 @@ var plotter = (function() {
             step = parseFloat('10e' + expt);
         }
         // Now we have the exact step, we look for the first multiple of the step
-        var xstart = Math.floor(xmin/step);
+        var xstart = Math.floor(xmin/step)*(step);
         if (xstart < 0) {
             xstart += step;
         }
@@ -135,20 +74,21 @@ var plotter = (function() {
             options[key] = options_default[key];
             }
         });
-        var program = calculator.parse(options.f);
-        options.xmin = program.xmin;
-        options.xmax = program.xmax;
-        var formula = stringifyFormula(program.expression);
 
-        // FIXME: Hard eval the function
-        eval('var f = function(x) { return ' + formula + ';}');
+        let context = compiler.compile(options.program);
+        window.ccc = context;
+        let context_options = context.options;
 
-        var xmin = options.xmin,
+        let xmin = options.xmin,
             xmax = options.xmax,
             xwidth = xmax - xmin;
             plotwidth = width - options.padding.left - options.padding.right;
             xscale = plotwidth/xwidth;
 
+        // TODO: Only plots first function
+        let f = context['functions'][0].value;
+        let function_options = context['functions'][0].options;
+        // FIXME: So far ignores all arguments
         var ret = plot(f, options.xmin, options.xmax);
         var ymin = ret.ymin,
             ymax = ret.ymax,
@@ -176,10 +116,12 @@ var plotter = (function() {
         ctx.beginPath();
         ctx.font = '12px monospace';
         for (var i=0; i<xticks.length; i++) {
+            // line
             x = getScreenX(xticks[i]);
             y = getScreenY(0);
             ctx.moveTo(x, 0);
             ctx.lineTo(x, height);
+            // label
             var label = getSafeLabel(xticks[i], xmax-xmin);
             ctx.fillText(label, x, y + 12);
             // ticks
@@ -187,9 +129,17 @@ var plotter = (function() {
             ctx.lineTo(x, y - 10);
         }
         for (var i=0; i<yticks.length; i++) {
+            // line
             y = getScreenY(yticks[i]);
+            x = getScreenX(0);
             ctx.moveTo(0, y);
             ctx.lineTo(width, y);
+            // label
+            var label = getSafeLabel(yticks[i], ymax-ymin);
+            ctx.fillText(label, x + 2, y - 3);
+            // ticks
+            ctx.moveTo(x - 10, y);
+            ctx.lineTo(x + 10, y);
         }
         ctx.stroke();
 

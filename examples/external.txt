@@ -1,0 +1,5 @@
+f(x) = x*x*sin(x);
+canvas['x-range'] = [-2, 3]; 
+canvas['grid-color'] = 'red';
+
+plot({f, color="cyan", thick=3});
