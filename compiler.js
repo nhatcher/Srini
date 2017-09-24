@@ -47,7 +47,9 @@ let compiler = (function() {
             ysoftmax: 100,
             ysoftmin: -100,
             axiscolor: 'grey',
+            axiswithd: 1,
             gridcolor: 'lightgrey',
+            gridwidth: 1,
             padding: {
                 top: 10,
                 right: 10,

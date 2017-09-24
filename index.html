@@ -21,18 +21,28 @@
         <div id="title">A function plotter</div>
     </div>
     <div id="program-area">
-        <textarea>
+<textarea>
 f(x) = 3*x/(1+x*x)+sin(x)/x;
 g(x) = 5*exp(-x*x)*pow(x, 2);
 
 plot(
-    [
-      {f, color="#4F6BB8", width=8},
-      {g, color="red"}
-    ],
-    xrange=[-5, 3]
+  [
+    {f, color="#4F6BB8", width=8},
+    {g, color="red"}
+  ],
+  xrange=[-5, 3]
 );
 </textarea>
+    </div>
+    <div id="help-area">
+        <div class="title">
+            <span>Examples</span>
+            <span class="button" id="previous-example">Previous</span>
+            <span class="button" id="next-example">Next</span>
+            <span class="button" id="copy-example">Copy</span></div>
+        <div id="example">
+
+        </div>
     </div>
     <div id="plot-area">
         <canvas id="plot-canvas"></canvas>

@@ -141,6 +141,7 @@ var plotter = (function() {
         var x0 = getScreenX(0);
         var y0 = getScreenY(0);
         ctx.strokeStyle = options.axiscolor;
+        ctx.lineWidth = options['axiswidth'];
         ctx.beginPath();
         ctx.moveTo(getScreenX(xmin), y0);
         ctx.lineTo(getScreenX(xmax), y0);

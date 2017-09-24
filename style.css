@@ -18,11 +18,46 @@
     left: 0px;
     top: 40px;
     width: 400px;
-    bottom: 40px;
+    bottom: 400px;
     border-right: 5px solid gray;
     font-size: 16px;
 }
 
+#help-area {
+    position: absolute;
+    left: 0px;
+    height: 360px;
+    width: 400px;
+    bottom: 40px;
+    border-right: 5px solid gray;
+    background: lightcyan;
+    font-size: 16px; 
+}
+
+#help-area .button {
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid blue;
+    background-color: lightblue;
+    font-family: Verdana;
+    cursor: pointer;
+    display: inline-block;
+}
+
+#help-area .button:hover {
+    background-color: #A0C7D3;
+}
+
+#help-area .title {
+    font-size: 20px;
+}
+
+#example {
+    padding: 7px;
+    font-family: "Courier New";
+    font-size: 16;
+    overflow: auto;
+}
 
 #header {
     position: absolute;
