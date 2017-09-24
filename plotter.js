@@ -107,6 +107,7 @@ var plotter = (function() {
         var yticks = getPrettyTicks(ymin, ymax, height);
         
         ctx.strokeStyle = options.gridcolor;
+        ctx.lineWidth = options['gridwidth'];
         ctx.beginPath();
         ctx.font = '12px monospace';
         for (var i=0; i<xticks.length; i++) {
