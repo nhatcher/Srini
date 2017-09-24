@@ -32,7 +32,7 @@ let compiler = (function() {
     function make_function_options(opt) {
         // default options
         let options = {
-            color: '#ccc',
+            color: 'black',
             width: 1
         };
         for (let i=0; i<opt.length; i++) {
@@ -44,7 +44,16 @@ let compiler = (function() {
     function make_plot_options(opt) {
         // default options
         let options = {
-
+            ysoftmax: 100,
+            ysoftmin: -100,
+            axiscolor: 'grey',
+            gridcolor: 'lightgrey',
+            padding: {
+                top: 10,
+                right: 10,
+                bottom: 10,
+                left: 10
+            }
         }
         for (let i=0; i<opt.length; i++) {
             options[opt[i].key] = opt[i].value;
@@ -105,18 +114,19 @@ let compiler = (function() {
     function semantic_check_function(node, variable, localVar, localFun) {
         // checks that all functions and variables used are actually defined.
         let type = node.type;
-        let name;
+        let name, c;
         if (variable in localVar) {
             throw new Error('Variable already in use: ' + variable);
         }
         switch (type) {
             case 'op':
-                let c = node.children;
+                c = node.children;
                 semantic_check_function(c[0], variable, localVar, localFun);
                 semantic_check_function(c[1], variable, localVar, localFun);
             break;
             case 'unary':
-               semantic_check_function(c[0], variable, localVar, localFun);
+               c = node.children;
+               semantic_check_function(c, variable, localVar, localFun);
             break;
             case 'function_declaration':
                 name = node.name;
@@ -127,11 +137,15 @@ let compiler = (function() {
                 }
             break;
             case 'function':
-                name = node.name;
+                name = node.value;
                 if (!globalFunctions.includes(name)) {
                     if (!(name in localFun)) {
                         throw new Error('Undefined function name: ' + name);
                     }
+                }
+                c = node.children;
+                for (let i=0; i<c.length; i++) {
+                    semantic_check_function(c[i], variable, localVar, localFun);
                 }
             break;
             case 'variable':
@@ -172,7 +186,7 @@ let compiler = (function() {
                 if (name in htLocalFunctions) {
                     throw new Error('Function already defined: ' + name);
                 } else {
-                    semantic_check_function(node, variable, htLocalVariables, htLocalFunctions);
+                    semantic_check_function(node.expression, variable, htLocalVariables, htLocalFunctions);
                     htLocalFunctions[name] = true;
                 }
             } else if (type == 'plot_command') {

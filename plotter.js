@@ -44,45 +44,22 @@ var plotter = (function() {
         }
         return s + '';
     }
-    function plotter(canvasId, options) {
+    function plotter(canvasId, program) {
         var canvas = document.getElementById(canvasId);
         var plot_area = document.getElementById('plot-area');
         var width = canvas.width;
         var height = canvas.height;
         var ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        var options_default = {
-            xmin: -5,
-            xmax: 5,
-            yaxes: {
-                auto: true
-            },
-            linecolor: 'red',
-            axiscolor: 'grey',
-            padding: {
-                top: 10,
-                right: 10,
-                bottom: 10,
-                left: 10
-            },
-            f: 'x*x'
-        }
-        // set defaults
-        Object.keys(options_default).forEach(function(key) {
-            if (!(key in options)) {
-            options[key] = options_default[key];
-            }
-        });
         let context;
        // try {
-            context = compiler.compile(options.program);
+            context = compiler.compile(program);
        /* } catch(e) {
             console.error(e);
             return;
         }*/
-        let context_options = context.options;
-        let xrange = context_options.xrange;
+        let options = context.options;
+        let xrange = options.xrange;
 
         let xmin = xrange[0],
             xmax = xrange[1],
@@ -90,13 +67,11 @@ var plotter = (function() {
             plotwidth = width - options.padding.left - options.padding.right;
             xscale = plotwidth/xwidth;
 
-        // TODO: Only plots first function
         let list = context['functions'];
-        // FIXME: So far ignores all arguments
         var data = [];
         let ymin, ymax;
         for (let i=0; i<list.length; i++) {
-            let ret = plot(list[i].value, options.xmin, options.xmax);
+            let ret = plot(list[i].value, xmin, xmax);
             if (i == 0) {
                 ymin = ret.ymin;
                 ymax = ret.ymax;
@@ -105,6 +80,10 @@ var plotter = (function() {
                 ymax = Math.max(ret.ymax, ymax);
             }
             data.push({datax:ret.datax, datay:ret.datay});
+        }
+        if (options.ysoftmax) {
+            ymax = Math.min(options.ysoftmax, ymax);
+            ymin = Math.max(ymin, options.ysoftmin);
         }
 
         let yheight = ymax - ymin,
@@ -127,7 +106,7 @@ var plotter = (function() {
         var xticks = getPrettyTicks(xmin, xmax, width);
         var yticks = getPrettyTicks(ymin, ymax, height);
         
-        ctx.strokeStyle = 'lightgrey';
+        ctx.strokeStyle = options.gridcolor;
         ctx.beginPath();
         ctx.font = '12px monospace';
         for (var i=0; i<xticks.length; i++) {
@@ -215,20 +194,12 @@ var plotter = (function() {
 
     function plot(f, xmin, xmax) {
         let N = 10000,
-            ymin = f(xmin),
-            ymax = ymin,
+            ymin,
+            ymax,
             step = (xmax-xmin)/N,
             datax = [],
             datay = [],
             x, y;
-
-        if (isNaN(ymin)) {
-            // In case the initial point is 0/0
-            // That's an indeterminate, we should be able to deal with that
-            // FIXME: Also this might also break. It could potentially be an indeterminate
-            ymin = f(xmin + step);
-            ymax = ymin;
-        }
 
         for (x=xmin; x<=xmax; x += step) {
             y = f(x);
@@ -236,10 +207,10 @@ var plotter = (function() {
                 // 0/0 
                 continue;
             }
-            if (y<ymin) {
+            if (isNaN(ymin) || y<ymin) {
                 ymin = y;
             }
-            if (y>ymax) {
+            if (isNaN(ymax) || y>ymax) {
                 ymax = y;
             }
             datax.push(x)

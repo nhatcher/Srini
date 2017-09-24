@@ -82,14 +82,19 @@ value
     ;
 
 atomic_value
-    : NUMBER
-        {$$ = Number($1);}
-    | '-' NUMBER
-        {$$ = -$2;}
+    : number
+        {$$ = $1;}
     | STRING
         {$$ = $1.slice(1, -1);}
     | BOOLEAN
         {$$ = $1 === 'true';}
+    ;
+
+number
+    : NUMBER
+        {$$ = Number($1);}
+    | '-' NUMBER
+        {$$ = -$2;}
     ;
 
 array
@@ -107,6 +112,8 @@ arrayList
 plot_command
     : PLOT '(' plot_functions ',' option_list ')' ';'
         { $$ = {type:"plot_command", list:$3, options: $5};}
+    | PLOT '(' plot_functions ',' '[' number ',' number ']'  ')' ';'
+        { $$ = {type:"plot_command", list:$3, options: [{key:'xrange', value:[$6, $8]}]};}
     ;
 
 plot_functions
