@@ -159,7 +159,7 @@ expr
     | expr '/' expr
         {$$ = {type:'op', value: '/', children: [$1, $3]};}
     | expr '^' expr
-        {$$ = {type:'op', value: '^', children: [$1, $3]};}
+        {$$ = {type:'function', value: 'pow', children: [$1, $3]};}
     | expr '!'
         {$$ = {type:'function', value:'gamma', children:$1};}
     | '-' expr %prec UMINUS

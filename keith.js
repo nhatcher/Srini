@@ -117,9 +117,7 @@ case 16: $$[$0-2].push($$[$0]); this.$ = $$[$0-2];
 break;
 case 17: this.$ = {type:"plot_command", list:$$[$0-4], options: $$[$0-2]};
 break;
-case 18:
-            this.$ = {type:"plot_command", list:$$[$0-8], options: [{key:'xrange', value:[$$[$0-5], $$[$0-3]]}]};
-        
+case 18: this.$ = {type:"plot_command", list:$$[$0-8], options: [{key:'xrange', value:[$$[$0-5], $$[$0-3]]}]};
 break;
 case 19:this.$ = [$$[$0]];
 break;
@@ -147,7 +145,7 @@ case 30:this.$ = {type:'op', value: '*', children: [$$[$0-2], $$[$0]]};
 break;
 case 31:this.$ = {type:'op', value: '/', children: [$$[$0-2], $$[$0]]};
 break;
-case 32:this.$ = {type:'op', value: '^', children: [$$[$0-2], $$[$0]]};
+case 32:this.$ = {type:'function', value: 'pow', children: [$$[$0-2], $$[$0]]};
 break;
 case 33:this.$ = {type:'function', value:'gamma', children:$$[$0-1]};
 break;
