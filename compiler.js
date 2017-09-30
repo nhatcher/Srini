@@ -21,7 +21,9 @@ let compiler = (function() {
         'floor',
         'max',
         'min',
-        'sqrt'
+        'sqrt',
+        'erf',
+        'erfc'
     ];
     
     const globalConstantsDict = {
@@ -74,7 +76,11 @@ let compiler = (function() {
 
     function getJSFunctionName(name) {
         if (globalFunctions.includes(name)) {
-            return 'Math.' + name;
+            if (name in math) {
+                return 'math.' + name;
+            } else {
+                return 'Math.' + name;
+            }
         } else {
             throw new Error('Undefined function ' + name);
         }
