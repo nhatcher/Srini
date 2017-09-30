@@ -23,7 +23,9 @@ let compiler = (function() {
         'min',
         'sqrt',
         'erf',
-        'erfc'
+        'erfc',
+        'j0',
+        'y0'
     ];
     
     const globalConstantsDict = {

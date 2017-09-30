@@ -15,7 +15,7 @@ A language for mathematical expressions
 (?:[0-9]|[1-9][0-9]+)(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?\b return 'NUMBER'
 "plot"                return 'PLOT'
 "true"|"false"        return 'BOOLEAN'
-[a-zA-Z]+             return 'NAME'
+[a-zA-Z][a-zA-Z0-9]*            return 'NAME'
 \"[a-zA-Z#_\-0-9]+\"  return 'STRING'
 "*"                   return '*'
 "/"                   return '/'
