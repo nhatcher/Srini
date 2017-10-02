@@ -25,7 +25,11 @@ let compiler = (function() {
         'erf',
         'erfc',
         'j0',
-        'y0'
+        'y0',
+        'j1',
+        'y1',
+        'jn',
+        'yn'
     ];
     
     const globalConstantsDict = {

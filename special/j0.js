@@ -12,7 +12,7 @@
  */
 
 
-/* __ieee754_j0(x), __ieee754_y0(x)
+/* j0(x), y0(x)
  * Bessel function of the first and second kinds of order zero.
  * Method -- j0(x):
  *	1. For tiny x, we use j0(x) = 1 - x^2/4 + x^4/64 - ...
@@ -30,7 +30,7 @@
  *			= 1/sqrt(2) * (sin(x) - cos(x))
  * 	   (To avoid cancellation, use
  *		sin(x) +- cos(x) = -cos(2x)/(sin(x) -+ cos(x))
- * 	    to compute the worse one.)
+ * 	    to compute the worse 1.)
  *	   
  *	3 Special cases
  *		j0(nan)= nan
@@ -53,7 +53,7 @@
  *	2. For x>=2.
  * 		y0(x) = sqrt(2/(pi*x))*(p0(x)*cos(x0)+q0(x)*sin(x0))
  * 	   where x0 = x-pi/4. It is better to compute sin(x0),cos(x0)
- *	   by the method mentioned above.
+ *	   by the method menti1d above.
  *	3. Special cases: y0(0)=-inf, y0(x<0)=NaN, y0(inf)=0.
  */
 
@@ -61,47 +61,44 @@
 
 
 const
-huge 	= 1e300,
-one	= 1.0,
-invsqrtpi=  5.64189583547756279280e-01, /* 0x3FE20DD7, 0x50429B6D */
-tpi      =  6.36619772367581382433e-01, /* 0x3FE45F30, 0x6DC9C883 */
- 		/* R0/S0 on [0, 2.00] */
-R02  =  1.56249999999999947958e-02, /* 0x3F8FFFFF, 0xFFFFFFFD */
-R03  = -1.89979294238854721751e-04, /* 0xBF28E6A5, 0xB61AC6E9 */
-R04  =  1.82954049532700665670e-06, /* 0x3EBEB1D1, 0x0C503919 */
-R05  = -4.61832688532103189199e-09, /* 0xBE33D5E7, 0x73D63FCE */
-S01  =  1.56191029464890010492e-02, /* 0x3F8FFCE8, 0x82C8C2A4 */
-S02  =  1.16926784663337450260e-04, /* 0x3F1EA6D2, 0xDD57DBF4 */
-S03  =  5.13546550207318111446e-07, /* 0x3EA13B54, 0xCE84D5A9 */
-S04  =  1.16614003333790000205e-09; /* 0x3E1408BC, 0xF4745D8F */
-
-const zero = 0.0;
+    huge 	= 1e300,
+    invsqrtpi=  5.64189583547756279280e-01, /* 0x3FE20DD7, 0x50429B6D */
+    tpi      =  6.36619772367581382433e-01, /* 0x3FE45F30, 0x6DC9C883 */
+            /* R0/S0 on [0, 2.00] */
+    R02  =  1.56249999999999947958e-02, /* 0x3F8FFFFF, 0xFFFFFFFD */
+    R03  = -1.89979294238854721751e-04, /* 0xBF28E6A5, 0xB61AC6E9 */
+    R04  =  1.82954049532700665670e-06, /* 0x3EBEB1D1, 0x0C503919 */
+    R05  = -4.61832688532103189199e-09, /* 0xBE33D5E7, 0x73D63FCE */
+    S01  =  1.56191029464890010492e-02, /* 0x3F8FFCE8, 0x82C8C2A4 */
+    S02  =  1.16926784663337450260e-04, /* 0x3F1EA6D2, 0xDD57DBF4 */
+    S03  =  5.13546550207318111446e-07, /* 0x3EA13B54, 0xCE84D5A9 */
+    S04  =  1.16614003333790000205e-09; /* 0x3E1408BC, 0xF4745D8F */
 
 const abs = Math.abs,
       cos = Math.cos,
       sin = Math.sin,
       sqrt = Math.sqrt,
-      __ieee754_log = Math.log;
+      log = Math.log;
 
-function __ieee754_j0(x)
+function j0(x)
 {
-	let /*double*/ z, s,c,ss,cc,r,u,v;
-	let /*int32_t*/ hx,ix;
+	let /*double*/ z, s, c, ss, cc, r, u, v;
+	let /*int32_t*/ hx, ix;
 
 	hx = bin_utils.highWord(x);
 	ix = hx&0x7fffffff;
 	if(ix>=0x7ff00000) {
-        return one/(x*x);
+        return 1/(x*x);
     }
 	x = abs(x);
-	if(ix >= 0x40000000) {	/* |x| >= 2.0 */
+	if (ix >= 0x40000000) {	/* |x| >= 2.0 */
 		s = sin(x);
 		c = cos(x);
 		ss = s-c;
 		cc = s+c;
 		if(ix<0x7fe00000) {  /* make sure x+x not overflow */
 		    z = -cos(x+x);
-		    if ((s*c)<zero) cc = z/ss;
+		    if ((s*c)<0) cc = z/ss;
 		    else 	    ss = z/cc;
 		}
 	/*
@@ -116,19 +113,19 @@ function __ieee754_j0(x)
 		return z;
 	}
 	if(ix<0x3f200000) {	/* |x| < 2**-13 */
-	    if(huge+x>one) {	/* raise inexact if x != 0 */
-	        if(ix<0x3e400000) return one;	/* |x|<2**-27 */
-	        else 	      return one - 0.25*x*x;
+	    if(huge+x>1) {	/* raise inexact if x != 0 */
+	        if(ix<0x3e400000) return 1;	/* |x|<2**-27 */
+	        else 	      return 1 - 0.25*x*x;
 	    }
 	}
 	z = x*x;
 	r =  z*(R02+z*(R03+z*(R04+z*R05)));
-	s =  one+z*(S01+z*(S02+z*(S03+z*S04)));
+	s =  1+z*(S01+z*(S02+z*(S03+z*S04)));
 	if(ix < 0x3FF00000) {	/* |x| < 1.00 */
-	    return one + z*(-0.25+(r/s));
+	    return 1 + z*(-0.25+(r/s));
 	} else {
 	    u = 0.5*x;
-	    return((one+u)*(one-u)+z*(r/s));
+	    return((1+u)*(1-u)+z*(r/s));
 	}
 }
 
@@ -146,7 +143,7 @@ v03  =  2.59150851840457805467e-07, /* 0x3E91642D, 0x7FF202FD */
 v04  =  4.41110311332675467403e-10; /* 0x3DFE5018, 0x3BD6D9EF */
 
 
-function __ieee754_y0(x) {
+function y0(x) {
 	let /*double*/ z, s,c,ss,cc,u,v;
 	let /*int32_t*/ hx,ix,lx;
 
@@ -155,9 +152,9 @@ function __ieee754_y0(x) {
     lx = bin_utils.lowWord(x);
         ix = 0x7fffffff&hx;
     /* Y0(NaN) is NaN, y0(-inf) is Nan, y0(inf) is 0  */
-	if(ix>=0x7ff00000) return  one/(x+x*x); 
-        if((ix|lx)==0) return -one/zero;
-        if(hx<0) return zero/zero;
+	if(ix>=0x7ff00000) return  1/(x+x*x); 
+        if((ix|lx)==0) return -Infinity;
+        if(hx<0) return NaN;
         if(ix >= 0x40000000) {  /* |x| >= 2.0 */
         /* y0(x) = sqrt(2/(pi*x))*(p0(x)*sin(x0)+q0(x)*cos(x0))
          * where x0 = x-pi/4
@@ -168,7 +165,7 @@ function __ieee754_y0(x) {
          *                      =  1/sqrt(2) * (sin(x) - cos(x))
          * To avoid cancellation, use
          *              sin(x) +- cos(x) = -cos(2x)/(sin(x) -+ cos(x))
-         * to compute the worse one.
+         * to compute the worse 1.
          */
                 s = sin(x);
                 c = cos(x);
@@ -180,7 +177,7 @@ function __ieee754_y0(x) {
 	 */
                 if(ix<0x7fe00000) {  /* make sure x+x not overflow */
                     z = -cos(x+x);
-                    if ((s*c)<zero) cc = z/ss;
+                    if ((s*c)<0) cc = z/ss;
                     else            ss = z/cc;
                 }
                 if(ix>0x48000000) z = (invsqrtpi*ss)/sqrt(x);
@@ -191,12 +188,12 @@ function __ieee754_y0(x) {
                 return z;
 	}
 	if(ix<=0x3e400000) {	/* x < 2**-27 */
-	    return(u00 + tpi*__ieee754_log(x));
+	    return(u00 + tpi*log(x));
 	}
 	z = x*x;
 	u = u00+z*(u01+z*(u02+z*(u03+z*(u04+z*(u05+z*u06)))));
-	v = one+z*(v01+z*(v02+z*(v03+z*v04)));
-	return(u/v + tpi*(__ieee754_j0(x)*__ieee754_log(x)));
+	v = 1+z*(v01+z*(v02+z*(v03+z*v04)));
+	return(u/v + tpi*(j0(x)*log(x)));
 }
 
 /* The asymptotic expansions of pzero is
@@ -284,10 +281,10 @@ function pzero(x) {
 	else if(ix>=0x40122E8B){p = pR5; q= pS5;}
 	else if(ix>=0x4006DB6D){p = pR3; q= pS3;}
 	else                   {p = pR2; q= pS2;}
-	z = one/(x*x);
+	z = 1/(x*x);
 	r = p[0]+z*(p[1]+z*(p[2]+z*(p[3]+z*(p[4]+z*p[5]))));
-	s = one+z*(q[0]+z*(q[1]+z*(q[2]+z*(q[3]+z*q[4]))));
-	return one+ r/s;
+	s = 1+z*(q[0]+z*(q[1]+z*(q[2]+z*(q[3]+z*q[4]))));
+	return 1+ r/s;
 }
 		
 
@@ -381,13 +378,13 @@ function qzero(x)
 	else if(ix>=0x40122E8B){p = qR5; q= qS5;}
 	else if(ix>=0x4006DB6D){p = qR3; q= qS3;}
 	else                   {p = qR2; q= qS2;}
-	z = one/(x*x);
+	z = 1/(x*x);
 	r = p[0]+z*(p[1]+z*(p[2]+z*(p[3]+z*(p[4]+z*p[5]))));
-	s = one+z*(q[0]+z*(q[1]+z*(q[2]+z*(q[3]+z*(q[4]+z*q[5])))));
+	s = 1+z*(q[0]+z*(q[1]+z*(q[2]+z*(q[3]+z*(q[4]+z*q[5])))));
 	return (-.125 + r/s)/x;
 }
 
-math.j0 = __ieee754_j0;
-math.y0 = __ieee754_y0;
+math.j0 = j0;
+math.y0 = y0;
 
 })();

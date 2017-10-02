@@ -25,7 +25,7 @@ const bin_utils = (function(){
     */
 
     var FLOAT64_VIEW = new Float64Array(1);
-    var UINT32_VIEW = new Uint32Array(FLOAT64_VIEW.buffer);
+    var INT32_VIEW = new Int32Array(FLOAT64_VIEW.buffer);
 
     // IS LITTLE ENDIAN //
 
@@ -33,7 +33,7 @@ const bin_utils = (function(){
         var uint16_view;
         var uint8_view;
 
-        uint16_view = new Uint16Array( 1 );
+        uint16_view = new Uint16Array(1);
 
         // Set the uint16 view to a value having distinguishable lower and higher order words.
         // 4660 => 0x1234 => 0x12 0x34 => '00010010 00110100' => (0x12,0x34) == (18,52)
@@ -57,18 +57,18 @@ const bin_utils = (function(){
 
     function setLowWord(x, low) {
         FLOAT64_VIEW[0] = x;
-        UINT32_VIEW[LOW] = ( low >>> 0 ); // identity bit shift to ensure integer
+        INT32_VIEW[LOW] = ( low >>> 0 ); // identity bit shift to ensure integer
         return FLOAT64_VIEW[0];
     }
 
     function lowWord(x) {
         FLOAT64_VIEW[0] = x;
-        return UINT32_VIEW[LOW];
+        return INT32_VIEW[LOW];
     }
 
     function highWord(x) {
         FLOAT64_VIEW[0] = x;
-        return UINT32_VIEW[HIGH];
+        return INT32_VIEW[HIGH];
     }
 
     return {

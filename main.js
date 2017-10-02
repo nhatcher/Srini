@@ -44,6 +44,18 @@ plot(
   ],
   xrange=[-5, 3]
 );`
+        },
+        {
+            title: 'TBessel',
+            program: `
+f(x) = j1(x);
+
+plot(
+  [
+    {f, color="#4F6BB8", width=8}
+  ],
+  xrange=[-20, 20]
+);`
         }
     ];
 
