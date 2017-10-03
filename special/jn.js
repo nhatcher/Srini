@@ -18,7 +18,7 @@
  * of order n
  *          
  * Special cases:
- *	y0(0)=y1(0)=yn(n,0) = -inf with division by zero signal;
+ *	y0(0)=y1(0)=yn(n,0) = -inf with division by 0 signal;
  *	y0(-ve)=y1(-ve)=yn(n,-ve) are NaN with invalid signal.
  * Note 2. About jn(n,x), yn(n,x)
  *	For n=0, j0(x) is called,
@@ -39,11 +39,8 @@
  */
 
 (function() {
-	const invsqrtpi =  5.64189583547756279280e-01, /* 0x3FE20DD7, 0x50429B6D */
-		two   =  2.00000000000000000000e+00, /* 0x40000000, 0x00000000 */
-		one   =  1.00000000000000000000e+00; /* 0x3FF00000, 0x00000000 */
+	const invsqrtpi =  5.64189583547756279280e-01; /* 0x3FE20DD7, 0x50429B6D */
 
-	const zero  =  0.00000000000000000000e+00;
 	const j0 = math.j0,
 		  j1 = math.j1,
 		  y0 = math.y0,
@@ -123,7 +120,7 @@
 				* J(n,x) = 1/n!*(x/2)^n  - ...
 				*/
 				if(n>33) {	/* underflow */
-					b = zero;
+					b = 0;
 				} else {
 					temp = x*0.5;
 					b = temp;
@@ -171,7 +168,7 @@
 			q0 = w;
 			z = w + h;
 			q1 = w*z - 1.0;
-			k=1;
+			k = 1;
 			while (q1<1.0e9) {
 				k += 1; z += h;
 				tmp = z*q1 - q0;
@@ -188,18 +185,18 @@
 			 *  double 7.09782712893383973096e+02
 			 *  long double 1.1356523406294143949491931077970765006170e+04
 			 *  then recurrent value may overflow and the result is
-			 *  likely underflow to zero
+			 *  likely underflow to 0
 			 */
 			tmp = n;
-			v = two/x;
+			v = 2/x;
 			tmp = tmp*log(abs(v*tmp));
 			if(tmp<7.09782712893383973096e+02) {
-				for(i=n-1,di=(i+i);i>0;i--){
+				for(i=n-1, di=(i+i); i>0; i--){
 					temp = b;
 					b *= di;
 					b  = b/x - a;
 					a = temp;
-					di -= two;
+					di -= 2;
 				 }
 			} else {
 				for(i=n-1, di=(i+i); i>0; i--) {
@@ -207,9 +204,9 @@
 					b *= di;
 					b  = b/x - a;
 					a = temp;
-					di -= two;
+					di -= 2;
 					/* scale b to avoid spurious overflow */
-					if(b>1e100) {
+					if (b>1e100) {
 						a /= b;
 						t /= b;
 						b  = 1;
@@ -241,9 +238,15 @@
 		hx = bin_utils.highWord(x);
 		ix = 0x7fffffff&hx;
 		/* if Y(n,NaN) is NaN */
-		if ((ix|(/*(u_int32_t)*/(lx|-lx))>>31)>0x7ff00000) return x+x;
-		if ((ix|lx)==0) return -one/zero;
-		if (hx<0) return zero/zero;
+		if ((ix|(/*(u_int32_t)*/(lx|-lx))>>31)>0x7ff00000) {
+			return x+x;
+		}
+		if ((ix|lx)==0) {
+			return -Infinity;
+		}
+		if (hx<0) {
+			return NaN;
+		}
 		sign = 1;
 		if (n<0) {
 			n = -n;
