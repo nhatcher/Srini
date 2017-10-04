@@ -8,8 +8,8 @@
 #plot-area {
     position: absolute;
     left: 405px;
-    right: 0px;
-    bottom: 40px;
+    right: 400px;
+    bottom: 240px;
     top: 40px;
 }
 
@@ -18,18 +18,18 @@
     left: 0px;
     top: 40px;
     width: 400px;
-    bottom: 400px;
+    bottom: 40px;
     border-right: 5px solid gray;
     font-size: 16px;
 }
 
 #help-area {
     position: absolute;
-    left: 0px;
-    height: 360px;
-    width: 400px;
+    right: 0px;
+    top: 40px;
+    width: 395px;
     bottom: 40px;
-    border-right: 5px solid gray;
+    border-left: 5px solid gray;
     background: lightcyan;
     font-size: 16px; 
 }
@@ -105,3 +105,40 @@
     height: 0px;
     border-top: 1px dashed lightblue;
 }
+
+#console-area {
+    position: absolute;
+    left: 405px;
+    right: 400px;
+    bottom: 40px;
+    height: 200px;
+    background: lightsalmon;
+}
+#console-tabs {
+    width: 100%;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background: lightskyblue;
+}
+#console-tabs span {
+    padding: 5px;
+    margin-left: 5px;
+    border: 1px solid salmon;
+    border-radius: 6px;
+    cursor: pointer;
+}
+#console-tabs span:hover {
+    text-decoration:underline;
+}
+#console-tabs span.selected {
+    font-weight: bold;
+}
+
+#console-debug {
+    visibility: hidden;
+    font-family: "Courier New";
+}
+#console-output {
+    font-family: "Courier New";
+}
+

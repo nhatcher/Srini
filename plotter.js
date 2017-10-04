@@ -52,12 +52,12 @@ var plotter = (function() {
         var ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         let context;
-       // try {
+        try {
             context = compiler.compile(program);
-       /* } catch(e) {
-            console.error(e);
+        } catch(e) {
+            terminal.showDebug(e);
             return;
-        }*/
+        }
         let options = context.options;
         let xrange = options.xrange;
 
