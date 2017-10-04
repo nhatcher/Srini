@@ -4,8 +4,8 @@ const terminal = (function() {
     const debug = document.getElementById('console-debug');
     const output_button = document.querySelectorAll('#console-tabs span')[0];
     const debug_button = document.querySelectorAll('#console-tabs span')[1];
-    self.showOutput = function() {
-
+    self.showOutput = function(str) {
+        output.innerText = str;
     }
 
     self.showDebug = function(e) {

@@ -88,7 +88,7 @@ let compiler = (function() {
                 return 'Math.' + name;
             }
         } else {
-            throw new Error('Undefined function ' + name);
+            return name;
         }
     }
 
@@ -208,6 +208,8 @@ let compiler = (function() {
                     throw new Error('Plot must be the last command');
                 }
                 // TODO
+            } else if (type == 'print') {
+                // TODO
             }
         }
         return;
@@ -245,6 +247,10 @@ let compiler = (function() {
                     plot_functions += `functions.push({value:${f_value}, options:${f_options}});\n`;
                 }
 
+            } else if (type === 'print_statement') {
+                let expr = node.expr;
+                let formulaString = stringifyFormula(expr);
+                functions += `terminal.showOutput(${formulaString});`;
             } else {
                 throw new Error ('Invalid type of statement: ' + type);
             }

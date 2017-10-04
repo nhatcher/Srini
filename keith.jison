@@ -14,6 +14,7 @@ A language for mathematical expressions
 \s+                   /* skip whitespace */
 (?:[0-9]|[1-9][0-9]+)(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?\b return 'NUMBER'
 "plot"                return 'PLOT'
+"print"                return 'PRINT'
 "true"|"false"        return 'BOOLEAN'
 [a-zA-Z][a-zA-Z0-9]*            return 'NAME'
 \"[a-zA-Z#_\-0-9]+\"  return 'STRING'
@@ -66,6 +67,8 @@ statement
     : function_declaration
         { $$ = $1;}
     | plot_command
+        { $$ = $1;}
+    | print_statement
         { $$ = $1;}
     ;
 
@@ -147,6 +150,11 @@ function_list_member
         {$$ = {value:$1, options: {}};}
     | '{' NAME ',' option_list '}'
         {$$ = {value: $2, options: $4};}
+    ;
+
+print_statement
+    : PRINT '(' expr ')' ';'
+        {$$ = {type: 'print_statement', expr: $3};}
     ;
 
 expr
