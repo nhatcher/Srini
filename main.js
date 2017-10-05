@@ -4,6 +4,8 @@ function main(event) {
         var plot_canvas = document.querySelector('#plot-canvas');
         plot_canvas.setAttribute('width', plot_area.clientWidth);
         plot_canvas.setAttribute('height', plot_area.clientHeight);
+        var program_area = document.querySelector('#program-area');
+        editor.setSize(program_area.clientWidth, program_area.clientHeight);
         update();
     }
     window.addEventListener('resize', () => { resize(); }, true);
@@ -14,11 +16,13 @@ function main(event) {
     var editor = CodeMirror.fromTextArea(editorEl, {
         lineNumbers: true
     });
-    var program_area = document.querySelector('#program-area');
-    editor.setSize(program_area.clientWidth, program_area.clientHeight);
-    editor.on('blur', function() {
+    /*editor.on('blur', function() {
         update();
-    });
+    });*/
+    const run_button = document.getElementById('run-button');
+    run_button.onclick = function () {
+        update();
+    }
     resize();
     let examples = [
         {

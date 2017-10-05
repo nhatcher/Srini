@@ -18,10 +18,36 @@
     left: 0px;
     top: 40px;
     width: 400px;
-    bottom: 40px;
+    bottom: 80px;
     border-right: 5px solid gray;
     font-size: 16px;
 }
+
+#command-area {
+    position: absolute;
+    left: 0px;
+    bottom: 40px;
+    height: 40px;
+    width: 388px;
+    text-align: right;
+    background: lightskyblue;
+    line-height: 40px;
+    border-right: 5px solid gray;
+    padding-right: 12px;
+}
+#command-area span {
+    padding: 5px;
+    background: #509dbd;
+    border: 1px solid blue;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#command-area span:hover {
+    text-decoration: underline;
+}
+
+
 
 #help-area {
     position: absolute;
@@ -84,9 +110,10 @@
     line-height: 40px;
     padding-right: 2px;
     padding-right: 20px;
-    font-family: Courier New, Courier, monospace;
+    font-family: "Courier New", Courier, monospace;
 }
 
+/* plot-area hints*/
 #vertical-hint {
     position: absolute;
     top: 0px;
@@ -105,6 +132,9 @@
     height: 0px;
     border-top: 1px dashed lightblue;
 }
+
+
+/* TERMINAL*/
 
 #console-area {
     position: absolute;
