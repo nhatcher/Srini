@@ -55,9 +55,10 @@ var plotter = (function() {
         try {
             context = compiler.compile(program);
         } catch(e) {
-            terminal.showDebug(e);
+            terminal.showDebug(e.toString());
             return;
         }
+        terminal.showDebug('Parsed OK');
         let options = context.options;
         let xrange = options.xrange;
 

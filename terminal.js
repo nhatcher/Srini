@@ -8,8 +8,8 @@ const terminal = (function() {
         output.innerText = str;
     }
 
-    self.showDebug = function(e) {
-        debug.innerText = e.toString();
+    self.showDebug = function(str) {
+        debug.innerText = str;
     }
 
     output_button.onclick = function() {
@@ -19,8 +19,8 @@ const terminal = (function() {
         }
         classList.add('selected');
         debug_button.classList.remove('selected');
-        output.style.visibility = 'hidden';
-        debug.style.visibility = 'visible' ;
+        output.style.visibility = 'visible';
+        debug.style.visibility = 'hidden' ;
     }
     debug_button.onclick = function() {
         let classList = debug_button.classList;

@@ -9,7 +9,7 @@ function main(event) {
     window.addEventListener('resize', () => { resize(); }, true);
     var editorEl = document.querySelector('#program-area textarea');
     function update() {
-        plotter('plot-canvas', editor.getValue().trim());
+        plotter('plot-canvas', editor.getValue());
     }
     var editor = CodeMirror.fromTextArea(editorEl, {
         lineNumbers: true
