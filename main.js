@@ -33,7 +33,7 @@ function main(event) {
             title: 'purple haze',
             program: `
 f(x) = cos(x)*exp(pow(x, 2))/(1+abs(x));
-plot({f, color="purple", width=3}, xrange=[-2,3]);`
+Plot({f, color="purple", width=3}, xrange=[-2,3]);`
         },
         {
             title: 'Two functions',
@@ -41,7 +41,7 @@ plot({f, color="purple", width=3}, xrange=[-2,3]);`
 f(x) = 3*x/(1+x*x)+sin(x)/x;
 g(x) = 5*exp(-x*x)*pow(x, 2);
 
-plot(
+Plot(
   [
     {f, color="#4F6BB8", width=8},
     {g, color="red"}
@@ -54,9 +54,25 @@ plot(
             program: `
 f(x) = j1(x);
 
-plot(
+Plot(
   [
     {f, color="#4F6BB8", width=8}
+  ],
+  xrange=[-20, 20]
+);`
+        },
+        {
+            title: 'Derivatives',
+            program: `
+f(x) = j1(x);
+g(x) = f'(x);
+
+Print(g(5));
+
+Plot(
+  [
+    {f, color="#4F6BB8", width=8},
+    {g, color="#4F6BB8", width=8}
   ],
   xrange=[-20, 20]
 );`

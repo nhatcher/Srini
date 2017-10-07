@@ -13,10 +13,10 @@ A language for mathematical expressions
 
 \s+                   /* skip whitespace */
 (?:[0-9]|[1-9][0-9]+)(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?\b return 'NUMBER'
-"plot"                return 'PLOT'
-"print"                return 'PRINT'
+"Plot"                return 'PLOT'
+"Print"               return 'PRINT'
 "true"|"false"        return 'BOOLEAN'
-[a-zA-Z][a-zA-Z0-9]*            return 'NAME'
+[a-zA-Z][a-zA-Z0-9]*  return 'NAME'
 \"[a-zA-Z#_\-0-9]+\"  return 'STRING'
 "*"                   return '*'
 "/"                   return '/'
@@ -34,6 +34,7 @@ A language for mathematical expressions
 ":"                   return ':'
 "="                   return '='
 ";"                   return ';'
+[\']+                 return 'DERIVATES'
 <<EOF>>               return 'EOF'
 .                     return 'INVALID'
 
@@ -157,6 +158,7 @@ print_statement
         {$$ = {type: 'print_statement', expr: $3};}
     ;
 
+
 expr
     : expr '+' expr
         {$$ = {type:'op', value: '+', children: [$1, $3]};}
@@ -169,13 +171,13 @@ expr
     | expr '^' expr
         {$$ = {type:'function', value: 'pow', children: [$1, $3]};}
     | expr '!'
-        {$$ = {type:'function', value:'gamma', children:$1};}
+        {$$ = {type:'function', value:'gamma', children: [$1]};}
     | '-' expr %prec UMINUS
         {{
             if($2.type === 'unary') {
                 throw new Error('Inavlid double unary');
             } else {
-                $$ = {type:'unary', value: '-', children: $2};
+                $$ = {type:'unary', value: '-', children: [$2]};
             }
         }}
     | '+' expr %prec UMINUS
@@ -188,6 +190,8 @@ expr
         {$$ = {type:'variable', value:$1};}
     | NAME '(' expr_list ')'
         {$$ = {type:'function', value:$1, children:$3};}
+    | NAME DERIVATES '(' expr ')'
+        {$$ = {type:'derivation', value:$1, order:$2.length, children:[$4]};}
     ;
 
 expr_list

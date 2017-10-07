@@ -37,6 +37,10 @@ let compiler = (function() {
         pi: Math.PI
     }
 
+    function deepCopy(expr) {
+        return JSON.parse(JSON.stringify(expr));
+    }
+
     function make_function_options(opt) {
         // default options
         let options = {
@@ -96,11 +100,13 @@ let compiler = (function() {
         if (name in globalConstantsDict) {
             return globalConstantsDict[name] + '';
         } else {
+            // TODO: this is error prone, but right now the name for the local variable in 'x' whatever is called elsewhere
             return 'x';
         }
     }
 
     function stringifyFormula(o) {
+        // takes an object and returns a javascript valid expression
         switch(o.type) {
             case 'op':
                 return '(' + stringifyFormula(o.children[0]) + o.value + stringifyFormula(o.children[1]) + ')';
@@ -114,7 +120,7 @@ let compiler = (function() {
                 return getJSFunctionName(o.value) + '(' + args.join(', ') + ')'
                 break;
             case 'unary':
-                return '-' + stringifyFormula(o.children);
+                return '-' + stringifyFormula(o.children[0]);
             case 'variable':
                 return getJSVarName(o.value);
             case 'number':
@@ -125,7 +131,7 @@ let compiler = (function() {
         }
     }
 
-    function semantic_check_function(node, variable, localVar, localFun) {
+    function semantic_pass_function(node, variable, localVar, localFun, extraFun) {
         // checks that all functions and variables used are actually defined.
         let type = node.type;
         let name, c;
@@ -135,12 +141,12 @@ let compiler = (function() {
         switch (type) {
             case 'op':
                 c = node.children;
-                semantic_check_function(c[0], variable, localVar, localFun);
-                semantic_check_function(c[1], variable, localVar, localFun);
+                semantic_pass_function(c[0], variable, localVar, localFun, extraFun);
+                semantic_pass_function(c[1], variable, localVar, localFun, extraFun);
             break;
             case 'unary':
                c = node.children;
-               semantic_check_function(c, variable, localVar, localFun);
+               semantic_pass_function(c[0], variable, localVar, localFun, extraFun);
             break;
             case 'function_declaration':
                 name = node.name;
@@ -159,8 +165,29 @@ let compiler = (function() {
                 }
                 c = node.children;
                 for (let i=0; i<c.length; i++) {
-                    semantic_check_function(c[i], variable, localVar, localFun);
+                    semantic_pass_function(c[i], variable, localVar, localFun, extraFun);
                 }
+            break;
+            case 'derivation':
+                // We find the derivation of a function
+                // We substitute by another function and we add the derivative to our list of functions.
+
+                let value = node.value;
+                let order = node.order;
+                if (order !== 1) {
+                    throw new Error ('Only first order derivatives have been implemented so far!');
+                }
+                let newValue = '_' + value;
+                node.type = 'function';
+                node.value = newValue;
+                extraFun[newValue] = true;
+                /*if (!(newValue in extraFun)) {
+                    let result = cas.derivate(node.children[0]);
+                    console.log(result);
+                    semantic_pass_function(result, variable, localVar, localFun, extraFun);
+                    extraFun[newValue] = result;
+                }*/
+
             break;
             case 'variable':
                 name = node.value;
@@ -179,18 +206,21 @@ let compiler = (function() {
                 throw new Error('Unlown node type in expression: ' + type);
         }
     }
-    function semantic_check(ast) {
+    function semantic_pass(ast, extraFunctions) {
         // We check that:
-        //   1. Functionas defined correctly
+        //   1. Functions defined correctly
         //        f(x) = rts(x) is incorrect if rts has not been defined
         //        f(x) = a*x is incorrect if a has not been defined
         //   2. For now the command plot is the last command and there is only one
         //   3. The xrange is correctly specified.
+
+        //  extraFunctions are derivatives found duriong the semantic pass
+        // TODO: The semantic pass should also recognize variables from constants and marke them
         if (!ast.length) {
             throw new Error('Syntax error. Excpected list of statements');
         }
-        var htLocalFunctions = {};
-        var htLocalVariables = {};
+        let htLocalFunctions = {};
+        let htLocalVariables = {};
         for (let i=0; i<ast.length; i++) {
             let node = ast[i];
             let type = node.type;
@@ -200,7 +230,7 @@ let compiler = (function() {
                 if (name in htLocalFunctions) {
                     throw new Error('Function already defined: ' + name);
                 } else {
-                    semantic_check_function(node.expression, variable, htLocalVariables, htLocalFunctions);
+                    semantic_pass_function(node.expression, variable, htLocalVariables, htLocalFunctions, extraFunctions);
                     htLocalFunctions[name] = true;
                 }
             } else if (type == 'plot_command') {
@@ -217,7 +247,8 @@ let compiler = (function() {
 
     compiler.compile = function(code) {
         let ast = keith.parse(code);
-        semantic_check(ast);
+        let extraFunctions = {};
+        semantic_pass(ast, extraFunctions);
         let options = {};
         let functions = '';
         let plot_functions = '';
@@ -235,6 +266,15 @@ let compiler = (function() {
         return ${formulaString};
     };
     local['${name}'] = ${name};`;
+                if (`_${name}` in extraFunctions) {
+                    let dexpr = cas.derivate(deepCopy(expr));
+                    let formulaString = stringifyFormula(dexpr);
+                    functions += `
+    let _${name} = function(x) {
+        return ${formulaString};
+    };
+    local['_${name}'] = _${name};`;
+                }
 
             } else if (type === 'plot_command') {
                 let list = node.list;
@@ -273,5 +313,6 @@ ${plot_options}
         var context = window.eval(program);
         return context;
     }
+    compiler.stringifyFormula = stringifyFormula;
     return compiler;
 })();
