@@ -3,7 +3,7 @@ const cas = (function() {
     function deepCopy(expr) {
         return JSON.parse(JSON.stringify(expr));
     }
-    let functionsDirvatives = {
+    let functionsDerivatives = {
         sin: 'cos(x)',
         cos: '-sin(x)',
         log: '1/x',
@@ -35,7 +35,6 @@ const cas = (function() {
         // yn: '(y(n - 1, x) - y(n + 1, x))/2'
     };
     function subtituteVar(expr, subs) {
-        console.assert('children' in expr);
         let c = expr.children;
         for (let i=0; i<c.length; i++) {
             let e = c[i];
@@ -49,8 +48,8 @@ const cas = (function() {
     function derivateFunction(expr) {
         // f(g(x)) --> f'(g(x))*g'(x)
         let value = expr.value;
-        if (value in functionsDirvatives) {
-            let formula = functionsDirvatives[value];
+        if (value in functionsDerivatives) {
+            let formula = functionsDerivatives[value];
             let lhs = keith.parse(`f(x) = ${formula};`)[0].expression;
             let subs = deepCopy(expr.children[0]);
             subtituteVar(lhs, subs);

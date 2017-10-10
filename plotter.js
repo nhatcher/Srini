@@ -1,4 +1,4 @@
-var plotter = (function() {
+const plotter = (function() {
 
     function getPrettyTicks(xmin, xmax, width) {
         // This function gives a hint of a good set of marks.

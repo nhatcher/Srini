@@ -1,5 +1,5 @@
-Srini
-=====
+Ariana
+======
 
 Let's build a Computer Algebra System in Javascript.
 
