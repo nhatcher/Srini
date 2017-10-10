@@ -178,16 +178,18 @@ let compiler = (function() {
                     throw new Error ('Only first order derivatives have been implemented so far!');
                 }
                 let newValue = '_' + value;
-                node.type = 'function';
-                node.value = newValue;
+                delete node.order;
+                // f'(g(x)) --> _f(g(x))*g'(x)
+                node.type = 'op';
+                node.value = '*';
+                let lhs = {
+                    type: 'function',
+                    value: newValue,
+                    children: node.children
+                }
+                let rhs = cas.derivate(node.children[0]);
+                node.children = [lhs, rhs];
                 extraFun[newValue] = true;
-                /*if (!(newValue in extraFun)) {
-                    let result = cas.derivate(node.children[0]);
-                    console.log(result);
-                    semantic_pass_function(result, variable, localVar, localFun, extraFun);
-                    extraFun[newValue] = result;
-                }*/
-
             break;
             case 'variable':
                 name = node.value;
@@ -247,8 +249,12 @@ let compiler = (function() {
 
     compiler.compile = function(code) {
         let ast = keith.parse(code);
-        let extraFunctions = {};
-        semantic_pass(ast, extraFunctions);
+        let symbolTable = {
+          /*  constants: {}, // keeps track of user defined constants. Unused now
+            functions: {}, // keeps track of user defined functions
+            derivatives: {} // used derivatives*/
+        };
+        semantic_pass(ast, symbolTable);
         let options = {};
         let functions = '';
         let plot_functions = '';
@@ -266,7 +272,7 @@ let compiler = (function() {
         return ${formulaString};
     };
     local['${name}'] = ${name};`;
-                if (`_${name}` in extraFunctions) {
+                if (`_${name}` in symbolTable) {
                     let dexpr = cas.derivate(deepCopy(expr));
                     let formulaString = stringifyFormula(dexpr);
                     functions += `

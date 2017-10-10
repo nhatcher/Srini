@@ -51,13 +51,24 @@ const cas = (function() {
         let value = expr.value;
         if (value in functionsDirvatives) {
             let formula = functionsDirvatives[value];
-            let e = keith.parse(`f(x) = ${formula};`)[0].expression;
+            let lhs = keith.parse(`f(x) = ${formula};`)[0].expression;
             let subs = deepCopy(expr.children[0]);
-            subtituteVar(e, subs);
+            subtituteVar(lhs, subs);
             return {
                 type: 'op',
                 value: '*',
-                children: [e, _derivate(expr.children[0])]
+                children: [lhs, _derivate(expr.children[0])]
+            };
+        } else {
+            let lhs = {
+                type: 'function',
+                value: '_' + value,
+                children: deepCopy(expr.children)
+            }
+            return {
+                type: 'op',
+                value: '*',
+                children: [lhs, _derivate(expr.children[0])]
             };
         }
         throw Error(`I do not know how to differentiate ${value} just yet`);
