@@ -18,6 +18,12 @@
     <link href="vendor/codemirror/codemirror.css" rel="stylesheet">
     <script>
         document.addEventListener("DOMContentLoaded", function(event) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const script = urlParams.get('script');
+            const editorEl = document.querySelector('#program-area textarea');
+            if (script) {
+                editorEl.value = script;
+            }
             main(event);
         });
     </script>
@@ -41,7 +47,7 @@ Plot(
 );
 </textarea>
     </div>
-    <div id="command-area"><span id="run-button">Run program</span></div>
+    <div id="command-area"><button id="share-button">Share</button><button id="run-button">Run program</button></div>
     <div id="plot-area">
         <canvas id="plot-canvas"></canvas>
         <div id="horizontal-hint"></div>
@@ -55,6 +61,7 @@ Plot(
         <div id="console-output"></div>
         <div id="console-debug"></div>
     </div>
+    <input id="hidden-input"/>
 </body>
 <script src="symbolic/cas.js"></script>
 <script src="terminal.js"></script>

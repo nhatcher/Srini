@@ -16,14 +16,27 @@ function main(event) {
     var editor = CodeMirror.fromTextArea(editorEl, {
         lineNumbers: true
     });
-    /*editor.on('blur', function() {
-        update();
-    });*/
+    editor.on('blur', function() {
+        // update();
+    });
     const run_button = document.getElementById('run-button');
     run_button.onclick = function () {
         update();
     }
+    const copyText = document.getElementById('hidden-input');
+    
+    const share_button = document.getElementById('share-button');
+    share_button.addEventListener("click", function () {
+        const href = window.location.href;
+        const url = href.slice(0, href.lastIndexOf('/'));
+        const share = `${url}/?script=${encodeURIComponent(editor.getValue())}`;
+        copyText.value = share;
+        copyText.select();
+        document.execCommand('copy');
+        alert('URL copied to your clipboard');
+    })
     resize();
+    return;
     let examples = [
         {
             title: 'sin function',
@@ -85,7 +98,7 @@ Plot(
     function showExample(i) {
         exampleEl.innerHTML = `<pre><code>${examples[i].program}</code></pre>`;
     }
-    showExample(0);
+    // showExample(0);
     let nextExample = document.getElementById('next-example');
     nextExample.onclick = function() {
         exampleId++;

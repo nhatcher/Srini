@@ -48,14 +48,15 @@
     border-right: 5px solid gray;
     padding-right: 12px;
 }
-#command-area span {
+
+#command-area button {
     padding: 5px;
     background: #509dbd;
     border: 1px solid blue;
     border-radius: 5px;
     cursor: pointer;
+    margin-left: 10px;
 }
-
 #command-area span:hover {
     text-decoration: underline;
 }
@@ -148,3 +149,6 @@
     font-family: "Courier New";
 }
 
+#hidden-input {
+    /* display: none; */
+}
